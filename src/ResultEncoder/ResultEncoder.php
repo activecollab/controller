@@ -51,6 +51,10 @@ class ResultEncoder implements ResultEncoderInterface
             return $response; // @TODO handle this special case
         }
 
+        if (empty($response->getHeader('content-type'))) {
+            $response = $response->withHeader('Content-Type', 'application/json;charset=UTF-8');
+        }
+
         // NULL
         if ($action_result === null) {
             return $response;
