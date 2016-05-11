@@ -13,6 +13,7 @@ use ActiveCollab\Controller\Response\StatusResponse;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * @package ActiveCollab\Id\Controller\Base
@@ -74,14 +75,29 @@ class ResultEncoder implements ResultEncoderInterface
             return $response->write(json_encode($action_result))->withStatus(200);
 
         // Exception
-        } elseif ($action_result instanceof Exception) {
+        } elseif ($action_result instanceof Throwable || $action_result instanceof Exception) {
             return $this->encodeException($action_result, $response);
         } else {
-            return $response;
+            return $this->onNoEncoderApplied($action_result, $request, $response);
         }
     }
 
     /**
+     * Call this function when no response encoding is applied by the encode() method.
+     *
+     * @param  mixed                  $action_result
+     * @param  ServerRequestInterface $request
+     * @param  ResponseInterface      $response
+     * @return ResponseInterface
+     */
+    protected function onNoEncoderApplied($action_result, ServerRequestInterface $request, ResponseInterface $response)
+    {
+        return $response;
+    }
+
+    /**
+     * Encode and return status response.
+     *
      * @param  StatusResponse    $action_result
      * @param  ResponseInterface $response
      * @return ResponseInterface
@@ -92,11 +108,13 @@ class ResultEncoder implements ResultEncoderInterface
     }
 
     /**
-     * @param  Exception         $exception
-     * @param  ResponseInterface $response
+     * Encode and return exception.
+     *
+     * @param  Throwable|Exception $exception
+     * @param  ResponseInterface   $response
      * @return ResponseInterface
      */
-    private function encodeException(Exception $exception, ResponseInterface $response)
+    private function encodeException($exception, ResponseInterface $response)
     {
         $error = ['message' => $exception->getMessage(), 'type' => get_class($exception)];
 
