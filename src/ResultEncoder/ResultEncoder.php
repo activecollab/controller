@@ -49,7 +49,13 @@ class ResultEncoder implements ResultEncoderInterface
     public function encode($action_result, ServerRequestInterface $request, ResponseInterface $response)
     {
         if ($action_result instanceof FileDownloadResponse) {
-            return $response; // @TODO handle this special case
+            foreach ($action_result->getHeaders() as $header => $value) {
+                $response = $response->withHeader($header, $value);
+            }
+
+            $action_result->loadFile();
+
+            return $response;
         }
 
         if (empty($response->getHeader('content-type'))) {
