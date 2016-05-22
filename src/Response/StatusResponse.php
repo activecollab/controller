@@ -11,7 +11,7 @@ namespace ActiveCollab\Controller\Response;
 /**
  * @package ActiveCollab\Controller\Response\StatusResponse
  */
-class StatusResponse implements ResponseInterface
+class StatusResponse implements StatusResponseInterface
 {
     /**
      * @var int
