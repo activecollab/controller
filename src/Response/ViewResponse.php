@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
 /**
  * @package ActiveCollab\Controller\Response
  */
-abstract class ViewResponse implements ViewResponseInterface
+class ViewResponse implements ViewResponseInterface
 {
     /**
      * @var TemplateEngineInterface
