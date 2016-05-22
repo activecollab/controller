@@ -9,7 +9,6 @@
 namespace ActiveCollab\Controller\Response;
 
 use ActiveCollab\TemplateEngine\TemplateEngineInterface;
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
 
 /**
@@ -23,28 +22,68 @@ abstract class ViewResponse implements ViewResponseInterface
     private $template_engine;
 
     /**
-     * @param TemplateEngineInterface $template_engine
+     * @var string
      */
-    public function __construct(TemplateEngineInterface &$template_engine)
+    private $template;
+
+    /**
+     * @var array
+     */
+    private $data;
+
+    /**
+     * @var string
+     */
+    private $content_type = 'text/html';
+
+    /**
+     * @var string
+     */
+    private $encoding = 'UTF-8';
+
+    /**
+     * @param TemplateEngineInterface $template_engine
+     * @param string                  $template
+     * @param array                   $template_data
+     * @param string                  $content_type
+     * @param string                  $encoding
+     */
+    public function __construct(TemplateEngineInterface &$template_engine, $template, array $template_data = [], $content_type = 'text/html', $encoding = 'UTF-8')
     {
         $this->template_engine = $template_engine;
+        $this->template = $template;
+        $this->data = $template_data;
+        $this->content_type = $content_type;
+        $this->encoding = $encoding;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function &getTemplateEngine()
+    public function render(Psr7ResponseInterface $response)
     {
-        return $this->template_engine;
-    }
+        if ($this->getContentType() && $this->getEncoding()) {
+            $response = $response->withHeader('Content-Type', $this->getContentType() . ';charset=' . $this->getEncoding());
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function render(Psr7ResponseInterface $response, $template, array $data = [])
-    {
-        $response->getBody()->write($this->fetch($template, $data));
+        $response->getBody()->write($this->template_engine->fetch($this->template, $this->data));
 
         return $response;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentType()
+    {
+        return $this->content_type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEncoding()
+    {
+        return $this->encoding;
     }
 }

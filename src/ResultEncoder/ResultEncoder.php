@@ -10,6 +10,7 @@ namespace ActiveCollab\Controller\ResultEncoder;
 
 use ActiveCollab\Controller\Response\FileDownloadResponse;
 use ActiveCollab\Controller\Response\StatusResponse;
+use ActiveCollab\Controller\Response\ViewResponseInterface;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -56,6 +57,10 @@ class ResultEncoder implements ResultEncoderInterface
             $action_result->loadFile();
 
             return $response;
+        }
+        
+        if ($action_result instanceof ViewResponseInterface) {
+            return $action_result->render($response);
         }
 
         if (empty($response->getHeader('content-type'))) {
