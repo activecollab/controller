@@ -63,9 +63,7 @@ class ResultEncoder implements ResultEncoderInterface
             return $action_result->render($response);
         }
 
-        if (empty($response->getHeader('content-type'))) {
-            $response = $response->withHeader('Content-Type', 'application/json;charset=UTF-8');
-        }
+        $response = $response->withHeader('Content-Type', 'application/json;charset=UTF-8');
 
         // NULL
         if ($action_result === null) {
