@@ -58,7 +58,7 @@ class ResultEncoder implements ResultEncoderInterface
 
             return $response;
         }
-        
+
         if ($action_result instanceof ViewResponseInterface) {
             return $action_result->render($response);
         }
@@ -71,17 +71,11 @@ class ResultEncoder implements ResultEncoderInterface
 
         // Respond with a status code
         } elseif ($action_result instanceof StatusResponse) {
-            $response = $this->encodeStatus($action_result, $response);
-
-            if ($action_result->getHttpCode() >= 400) {
-                $response = $response->write(json_encode(['message' => $action_result->getMessage()]));
-            }
-
-            return $response;
+            return $this->encodeStatus($action_result, $response);
 
         // Array
         } elseif (is_array($action_result)) {
-            return $response->write(json_encode($action_result))->withStatus(200);
+            return $this->encodeArray($action_result, $response);
 
         // Exception
         } elseif ($action_result instanceof Throwable || $action_result instanceof Exception) {
@@ -105,15 +99,34 @@ class ResultEncoder implements ResultEncoderInterface
     }
 
     /**
+     * Encode regular array response, with status 200.
+     *
+     * @param  array             $action_result
+     * @param  ResponseInterface $response
+     * @param  int               $status
+     * @return ResponseInterface
+     */
+    protected function encodeArray(array $action_result, ResponseInterface $response, $status = 200)
+    {
+        return $response->write(json_encode($action_result))->withStatus($status);
+    }
+
+    /**
      * Encode and return status response.
      *
      * @param  StatusResponse    $action_result
      * @param  ResponseInterface $response
      * @return ResponseInterface
      */
-    private function encodeStatus(StatusResponse $action_result, ResponseInterface $response)
+    protected function encodeStatus(StatusResponse $action_result, ResponseInterface $response)
     {
-        return $response->withStatus($action_result->getHttpCode(), $action_result->getMessage());
+        $response = $response->withStatus($action_result->getHttpCode(), $action_result->getMessage());
+
+        if ($action_result->getHttpCode() >= 400) {
+            $response = $response->write(json_encode(['message' => $action_result->getMessage()]));
+        }
+
+        return $response;
     }
 
     /**
@@ -121,9 +134,10 @@ class ResultEncoder implements ResultEncoderInterface
      *
      * @param  Throwable|Exception $exception
      * @param  ResponseInterface   $response
+     * @param  int                 $status
      * @return ResponseInterface
      */
-    private function encodeException($exception, ResponseInterface $response)
+    protected function encodeException($exception, ResponseInterface $response, $status = 500)
     {
         $error = ['message' => $exception->getMessage(), 'type' => get_class($exception)];
 
@@ -142,6 +156,6 @@ class ResultEncoder implements ResultEncoderInterface
             } while ($exception = $exception->getPrevious());
         }
 
-        return $response->write(json_encode($error))->withStatus(500);
+        return $response->write(json_encode($error))->withStatus($status);
     }
 }
