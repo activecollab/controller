@@ -77,6 +77,10 @@ class ResultEncoder implements ResultEncoderInterface
         } elseif (is_array($action_result)) {
             return $this->encodeArray($action_result, $response);
 
+        // Scalar
+        } elseif (is_scalar($action_result)) {
+            return $this->encodeScalar($action_result, $response);
+
         // Exception
         } elseif ($action_result instanceof Throwable || $action_result instanceof Exception) {
             return $this->encodeException($action_result, $response);
@@ -107,6 +111,19 @@ class ResultEncoder implements ResultEncoderInterface
      * @return ResponseInterface
      */
     protected function encodeArray(array $action_result, ResponseInterface $response, $status = 200)
+    {
+        return $response->write(json_encode($action_result))->withStatus($status);
+    }
+
+    /**
+     * Encode scalar value, with status 200.
+     *
+     * @param  array             $action_result
+     * @param  ResponseInterface $response
+     * @param  int               $status
+     * @return ResponseInterface
+     */
+    protected function encodeScalar(array $action_result, ResponseInterface $response, $status = 200)
     {
         return $response->write(json_encode($action_result))->withStatus($status);
     }
