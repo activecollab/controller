@@ -118,12 +118,12 @@ class ResultEncoder implements ResultEncoderInterface
     /**
      * Encode scalar value, with status 200.
      *
-     * @param  array             $action_result
+     * @param  mixed             $action_result
      * @param  ResponseInterface $response
      * @param  int               $status
      * @return ResponseInterface
      */
-    protected function encodeScalar(array $action_result, ResponseInterface $response, $status = 200)
+    protected function encodeScalar($action_result, ResponseInterface $response, $status = 200)
     {
         return $response->write(json_encode($action_result))->withStatus($status);
     }

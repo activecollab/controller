@@ -123,4 +123,63 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
             throw new ActionForMethodNotFound($request->getMethod());
         }
     }
+
+    /**
+     * Return a param from a parsed body.
+     *
+     * This method is NULL or object safe - it will check for body type, and do it's best to return a value without
+     * breaking or throwing a warning.
+     *
+     * @param  ServerRequestInterface $request
+     * @param                         $param_name
+     * @param  null                   $default
+     * @return mixed|null
+     */
+    protected function getParsedBodyParam(ServerRequestInterface $request, $param_name, $default = null)
+    {
+        $parsed_body = $request->getParsedBody();
+
+        if ($parsed_body) {
+            if (is_array($parsed_body) && array_key_exists($param_name, $parsed_body)) {
+                return $parsed_body[$param_name];
+            } elseif (is_object($parsed_body) && property_exists($parsed_body, $param_name)) {
+                return $parsed_body->$param_name;
+            }
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param  ServerRequestInterface $request
+     * @param  string                 $param_name
+     * @param  mixed                  $default
+     * @return mixed
+     */
+    protected function getCookieParam(ServerRequestInterface $request, $param_name, $default = null)
+    {
+        return array_key_exists($param_name, $request->getCookieParams()) ? $request->getCookieParams()[$param_name] : $default;
+    }
+
+    /**
+     * @param  ServerRequestInterface $request
+     * @param  string                 $param_name
+     * @param  mixed                  $default
+     * @return mixed
+     */
+    protected function getQueryParam(ServerRequestInterface $request, $param_name, $default = null)
+    {
+        return array_key_exists($param_name, $request->getQueryParams()) ? $request->getQueryParams()[$param_name] : $default;
+    }
+
+    /**
+     * @param  ServerRequestInterface $request
+     * @param  string                 $param_name
+     * @param  mixed                  $default
+     * @return mixed
+     */
+    protected function getServerParam(ServerRequestInterface $request, $param_name, $default = null)
+    {
+        return array_key_exists($param_name, $request->getServerParams()) ? $request->getServerParams()[$param_name] : $default;
+    }
 }
