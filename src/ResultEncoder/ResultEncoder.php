@@ -50,7 +50,7 @@ class ResultEncoder implements ResultEncoderInterface
     public function encode($action_result, ServerRequestInterface $request, ResponseInterface $response)
     {
         if ($action_result instanceof ResponseInterface) {
-            return $result;
+            return $action_result;
         }
 
         if ($action_result instanceof FileDownloadResponse) {
