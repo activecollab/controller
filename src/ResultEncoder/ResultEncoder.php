@@ -10,6 +10,7 @@ namespace ActiveCollab\Controller\ResultEncoder;
 
 use ActiveCollab\Controller\Response\FileDownloadResponse;
 use ActiveCollab\Controller\Response\StatusResponse;
+use ActiveCollab\Controller\Response\StatusResponseInterface;
 use ActiveCollab\Controller\Response\ViewResponseInterface;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
@@ -65,23 +66,14 @@ class ResultEncoder implements ResultEncoderInterface
 
         $response = $response->withHeader('Content-Type', 'application/json;charset=UTF-8');
 
-        // NULL
         if ($action_result === null) {
             return $response;
-
-        // Respond with a status code
-        } elseif ($action_result instanceof StatusResponse) {
+        } elseif ($action_result instanceof StatusResponseInterface) {
             return $this->encodeStatus($action_result, $response);
-
-        // Array
         } elseif (is_array($action_result)) {
             return $this->encodeArray($action_result, $response);
-
-        // Scalar
         } elseif (is_scalar($action_result)) {
             return $this->encodeScalar($action_result, $response);
-
-        // Exception
         } elseif ($action_result instanceof Throwable || $action_result instanceof Exception) {
             return $this->encodeException($action_result, $response);
         } else {
