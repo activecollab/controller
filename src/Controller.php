@@ -18,6 +18,7 @@ use Exception;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * @package ActiveCollab\Controller
@@ -113,6 +114,12 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
                     try {
                         return $this->getResultEncoder()->encode(call_user_func([&$this, $action], $request, $arguments), $request, $response);
                     } catch (Exception $e) {
+                        if ($this->logger instanceof LoggerInterface) {
+                            $this->logger->warning("Exception is caught with message {$e->getMessage()}", [
+                                'exception' => $e,
+                            ]);
+                        }
+
                         return $this->getResultEncoder()->encode($e, $request, $response);
                     }
                 }

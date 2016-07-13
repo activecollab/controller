@@ -36,12 +36,18 @@ class FileDownloadResponse implements ResponseInterface
     private $filename;
 
     /**
-     * @param string $file
-     * @param string $content_type
-     * @param bool   $inline
-     * @param string $filename
+     * @var string|null
      */
-    public function __construct($file, $content_type, $inline = false, $filename = null)
+    private $x_type;
+
+    /**
+     * @param string      $file
+     * @param string      $content_type
+     * @param bool        $inline
+     * @param string      $filename
+     * @param string|null $x_type
+     */
+    public function __construct($file, $content_type, $inline = false, $filename = null, $x_type = null)
     {
         if (!is_file($file)) {
             throw new RuntimeException('Download file not found');
@@ -51,6 +57,7 @@ class FileDownloadResponse implements ResponseInterface
         $this->content_type = $content_type;
         $this->inline = $inline;
         $this->filename = $filename;
+        $this->x_type = $x_type;
     }
 
     /**
@@ -61,7 +68,7 @@ class FileDownloadResponse implements ResponseInterface
         $filename = $this->filename ?: basename($this->file);
         $disposition = $this->inline ? 'inline' : 'attachment';
 
-        return [
+        $result = [
             'Content-Description' => $this->inline ? 'Binary' : 'File Transfer',
             'Content-Type' => $this->inline ? $this->content_type : 'application/octet-stream',
             'Content-Length' => filesize($this->file),
@@ -69,6 +76,12 @@ class FileDownloadResponse implements ResponseInterface
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Pragma' => 'public',
         ];
+
+        if ($this->x_type) {
+            $result['X-Type'] = $this->x_type;
+        }
+
+        return $result;
     }
 
     public function loadFile()

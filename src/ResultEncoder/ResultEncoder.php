@@ -50,6 +50,10 @@ class ResultEncoder implements ResultEncoderInterface
      */
     public function encode($action_result, ServerRequestInterface $request, ResponseInterface $response)
     {
+        if ($action_result instanceof ResponseInterface) {
+            return $action_result;
+        }
+
         if ($action_result instanceof FileDownloadResponse) {
             foreach ($action_result->getHeaders() as $header => $value) {
                 $response = $response->withHeader($header, $value);
@@ -71,6 +75,10 @@ class ResultEncoder implements ResultEncoderInterface
         } elseif ($action_result instanceof StatusResponseInterface) {
             return $this->encodeStatus($action_result, $response);
         } elseif (is_array($action_result)) {
+            if (isset($action_result['status']) && isset($action_result['body'])) {
+                return $this->encodeArray($action_result['body'], $response, $action_result['status']);
+            }
+
             return $this->encodeArray($action_result, $response);
         } elseif (is_scalar($action_result)) {
             return $this->encodeScalar($action_result, $response);
