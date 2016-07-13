@@ -18,3 +18,17 @@ All of these methods accept three parameters:
 1. `$request` (`\Psr\Http\Message\ServerRequestInterface` instance)
 2. `$param_name` (string)
 3. `$default` (mixed, `NULL` by default)
+
+## Exception Handling
+
+When action fails due to an exception, system will return 500 HTTP error, with a message that does not expose any of the system details. 
+
+This is done in such a way that new `RuntimeException` is constructed, with generic error message, and real exception is passed as `$previous` constructor argument of the new exception. If you have your system configured so exceptions are fully described when 500 errors are rendered (in debug mode for example), you'll be able to access original exception detials like that.
+
+To change default exception message, call `setLogExceptionMessage()` controller method:
+
+```php
+$controller->setLogExceptionMessage('Something weird happened: {exception}');
+```
+
+If `$logger` is added to the controller (during construction or later on), all exceptions that actions throw will be logged with error level.

@@ -16,9 +16,11 @@ use ActiveCollab\Controller\Response\StatusResponse;
 use ActiveCollab\Controller\ResultEncoder\ResultEncoderInterface;
 use Exception;
 use Interop\Container\ContainerInterface;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 /**
  * @package ActiveCollab\Controller
@@ -33,13 +35,30 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
     private $result_encoder;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var string
+     */
+    private $action_exception_message = 'Whoops, something went wrong...';
+
+    /**
+     * @var string
+     */
+    private $log_exception_message = 'Controller action aborted with an exception';
+
+    /**
      * @param ContainerInterface     $container
      * @param ResultEncoderInterface $result_encoder
+     * @param LoggerInterface|null   $logger
      */
-    public function __construct(ContainerInterface &$container, ResultEncoderInterface &$result_encoder)
+    public function __construct(ContainerInterface &$container, ResultEncoderInterface &$result_encoder, LoggerInterface $logger = null)
     {
         $this->setContainer($container);
         $this->setResultEncoder($result_encoder);
+        $this->setLogger($logger);
     }
 
     /**
@@ -56,6 +75,68 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
     public function &setResultEncoder(ResultEncoderInterface $result_encoder)
     {
         $this->result_encoder = $result_encoder;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function &setLogger(LoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClientFacingExceptionMessage()
+    {
+        return $this->action_exception_message;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function &setClientFacingExceptionMessage($message)
+    {
+        if (empty($message)) {
+            throw new InvalidArgumentException("Client facing exception message can't be empty");
+        }
+
+        $this->action_exception_message = $message;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLogExceptionMessage()
+    {
+        return $this->log_exception_message;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function &setLogExceptionMessage($message)
+    {
+        if (empty($message)) {
+            throw new InvalidArgumentException("Log exception message can't be empty");
+        }
+
+        $this->log_exception_message = $message;
 
         return $this;
     }
@@ -114,14 +195,17 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
                     try {
                         return $this->getResultEncoder()->encode(call_user_func([&$this, $action], $request, $arguments), $request, $response);
                     } catch (Exception $e) {
-                        if ($this->container->has('logger')) {
-                            $this->container->get('logger')->warning("Controller action aborted with an exception: {exception_message}", [
-                                'exception_message' => $e->getMessage(),
-                                'exception' => $e,
-                            ]);
+                        if ($this->logger) {
+                            $this->logger->error($this->getLogExceptionMessage(), ['exception' => $e]);
                         }
 
-                        return $this->getResultEncoder()->encode($e, $request, $response);
+                        $exception_message = $this->action_exception_message;
+
+                        if (strpos($exception_message, '{message}') !== false) {
+                            $exception_message = str_replace('{message}', $e->getMessage(), $exception_message);
+                        }
+
+                        return $this->getResultEncoder()->encode(new RuntimeException($exception_message, 0, $e), $request, $response);
                     }
                 }
             } else {
