@@ -114,8 +114,8 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
                     try {
                         return $this->getResultEncoder()->encode(call_user_func([&$this, $action], $request, $arguments), $request, $response);
                     } catch (Exception $e) {
-                        if ($this->logger instanceof LoggerInterface) {
-                            $this->logger->warning("Exception is caught with message {$e->getMessage()}", [
+                        if ($this->container->has('logger')) {
+                            $this->container->get('logger')->warning("Exception is caught with message {$e->getMessage()}", [
                                 'exception' => $e,
                             ]);
                         }
