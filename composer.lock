@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c3e75426c4b313efccb996b333d7579f",
-    "content-hash": "d7ae6fe99170889b72c65acf8b9cf8e9",
+    "hash": "7ae6058ffa3479535aa45f24daf7d357",
+    "content-hash": "be4b69e6cfd7770a88c10c422caa27dc",
     "packages": [
         {
             "name": "activecollab/containeraccess",
@@ -309,7 +309,7 @@
             "time": "2015-06-14 21:17:01"
         },
         {
-            "name": "fabpot/php-cs-fixer",
+            "name": "friendsofphp/php-cs-fixer",
             "version": "v1.11.5",
             "source": {
                 "type": "git",
@@ -364,7 +364,6 @@
                 }
             ],
             "description": "A tool to automatically fix PHP code style",
-            "abandoned": "friendsofphp/php-cs-fixer",
             "time": "2016-07-06 22:49:35"
         },
         {
