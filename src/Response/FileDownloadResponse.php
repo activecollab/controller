@@ -9,6 +9,8 @@
 namespace ActiveCollab\Controller\Response;
 
 use RuntimeException;
+use Slim\Http\Response;
+use Slim\Http\Stream;
 
 /**
  * @package ActiveCollab\Controller\Response
@@ -60,32 +62,29 @@ class FileDownloadResponse implements ResponseInterface
         $this->x_type = $x_type;
     }
 
-    /**
-     * @return array
-     */
-    public function getHeaders()
+    public function createPsrResponse()
     {
         $filename = $this->filename ?: basename($this->file);
         $disposition = $this->inline ? 'inline' : 'attachment';
 
-        $result = [
-            'Content-Description' => $this->inline ? 'Binary' : 'File Transfer',
-            'Content-Type' => $this->inline ? $this->content_type : 'application/octet-stream',
-            'Content-Length' => filesize($this->file),
-            'Content-Disposition' => $disposition . ';filename="' . $filename . '"',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Pragma' => 'public',
-        ];
+        $response = new Response();
+        $stream = new Stream(fopen($this->file, 'rb'));
+
+        /** @var Response $response */
+        $response = $response
+            ->withHeader('Content-Type', $this->inline ? $this->content_type : 'application/force-download')
+            ->withHeader('Content-Description', $this->inline ? 'Binary' : 'File Transfer')
+            ->withHeader('Content-Transfer-Encoding', 'binary')
+            ->withHeader('Content-Disposition', $disposition . '; filename="' . $filename . '"')
+            ->withHeader('Content-Length', filesize($this->file))
+            ->withHeader('Expires', '0')
+            ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+            ->withHeader('Pragma', 'public');
 
         if ($this->x_type) {
-            $result['X-Type'] = $this->x_type;
+            $response = $response->withHeader('X-Type', $this->x_type);
         }
 
-        return $result;
-    }
-
-    public function loadFile()
-    {
-        readfile($this->file);
+        return $response->withBody($stream);
     }
 }
