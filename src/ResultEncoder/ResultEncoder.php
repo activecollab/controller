@@ -55,13 +55,7 @@ class ResultEncoder implements ResultEncoderInterface
         }
 
         if ($action_result instanceof FileDownloadResponse) {
-            foreach ($action_result->getHeaders() as $header => $value) {
-                $response = $response->withHeader($header, $value);
-            }
-
-            $action_result->loadFile();
-
-            return $response;
+            return $action_result->createPsrResponse();
         }
 
         if ($action_result instanceof ViewResponseInterface) {
