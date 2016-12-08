@@ -9,7 +9,6 @@
 namespace ActiveCollab\Controller;
 
 use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
-use ActiveCollab\Controller\ResultEncoder\ResultEncoderInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -18,34 +17,26 @@ use Psr\Log\LoggerInterface;
 interface ControllerInterface
 {
     /**
+     * Return controller name, without namespace.
+     *
+     * @return string
+     */
+    public function getControllerName(): string;
+
+    /**
      * Return action name resolver.
      *
      * @return ActionNameResolverInterface
      */
-    public function getActionNameResolver();
+    public function getActionNameResolver(): ActionNameResolverInterface;
 
     /**
      * Set action name resolver interface.
      *
      * @param  ActionNameResolverInterface $action_name_resolver
-     * @return $this
+     * @return ControllerInterface|$this
      */
-    public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver);
-
-    /**
-     * Return action result encoder.
-     *
-     * @return ResultEncoderInterface
-     */
-    public function getResultEncoder();
-
-    /**
-     * Set action result encoder.
-     *
-     * @param  ResultEncoderInterface $result_encoder
-     * @return $this
-     */
-    public function &setResultEncoder(ResultEncoderInterface $result_encoder);
+    public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver): ControllerInterface;
 
     /**
      * Return logger.
@@ -57,17 +48,17 @@ interface ControllerInterface
     /**
      * Set logger.
      *
-     * @param  LoggerInterface|null $logger
-     * @return $this
+     * @param  LoggerInterface|null      $logger
+     * @return ControllerInterface|$this
      */
-    public function &setLogger(LoggerInterface $logger = null);
+    public function &setLogger(LoggerInterface $logger = null): ControllerInterface;
 
     /**
      * Return message that is returned as 500 error when action breaks due to an exception.
      *
      * @return string
      */
-    public function getClientFacingExceptionMessage();
+    public function getClientSafeExceptionMessage(): string;
 
     /**
      * Set message that is returned as 500 error when action breaks due to exception.
@@ -76,30 +67,38 @@ interface ControllerInterface
      *
      * $controller->setActionExceptionMessage('Failed because {message}');
      *
-     * @param  string $message
-     * @return $this
+     * @param  string                    $message
+     * @return ControllerInterface|$this
      */
-    public function &setClientFacingExceptionMessage($message);
+    public function &setClientSafeExceptionMessage(string $message): ControllerInterface;
 
     /**
-     * Return message that will be logged if contraoller action fails due to an exception.
+     * Return message that will be logged if controller action fails due to an exception.
      *
      * @return string
      */
-    public function getLogExceptionMessage();
+    public function getLogExceptionMessage(): string;
 
     /**
-     * Set message that will be logged if contraoller action fails due to an exception.
+     * Set message that will be logged if controller action fails due to an exception.
      *
-     * @param  string $message
-     * @return $this
+     * @param  string                    $message
+     * @return ControllerInterface|$this
      */
-    public function &setLogExceptionMessage($message);
+    public function &setLogExceptionMessage(string $message): ControllerInterface;
 
     /**
-     * Return controller name, without namespace.
+     * Return message that will be logged if controller action fails due to a PHP error.
      *
      * @return string
      */
-    public function getControllerName();
+    public function getLogPhpErrorMessage(): string;
+
+    /**
+     * Set message that will be logged if controller action fails due to a PHP error.
+     *
+     * @param  string                    $message
+     * @return ControllerInterface|$this
+     */
+    public function &setLogPhpErrorMessage(string $message): ControllerInterface;
 }
