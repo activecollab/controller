@@ -10,8 +10,11 @@ namespace ActiveCollab\Controller;
 
 use ActiveCollab\ContainerAccess\ContainerAccessInterface;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as ContainerAccessInterfaceImplementation;
+use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
 use ActiveCollab\Controller\Exception\ActionForMethodNotFound;
 use ActiveCollab\Controller\Exception\ActionNotFound;
+use ActiveCollab\Controller\RequestParamGetter\Implementation as RequestParamGetterImplementation;
+use ActiveCollab\Controller\RequestParamGetter\RequestParamGetterInterface;
 use ActiveCollab\Controller\Response\StatusResponse;
 use ActiveCollab\Controller\ResultEncoder\ResultEncoderInterface;
 use Exception;
@@ -25,9 +28,14 @@ use RuntimeException;
 /**
  * @package ActiveCollab\Controller
  */
-abstract class Controller implements ContainerAccessInterface, ControllerInterface
+abstract class Controller implements ContainerAccessInterface, ControllerInterface, RequestParamGetterInterface
 {
-    use ContainerAccessInterfaceImplementation;
+    use ContainerAccessInterfaceImplementation, RequestParamGetterImplementation;
+
+    /**
+     * @var ActionNameResolverInterface
+     */
+    private $action_name_resolver;
 
     /**
      * @var ResultEncoderInterface
@@ -59,6 +67,24 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         $this->setContainer($container);
         $this->setResultEncoder($result_encoder);
         $this->setLogger($logger);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getActionNameResolver()
+    {
+        return $this->action_name_resolver;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver)
+    {
+        $this->action_name_resolver = $action_name_resolver;
+
+        return $this;
     }
 
     /**
@@ -214,64 +240,5 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         } else {
             throw new ActionForMethodNotFound($request->getMethod());
         }
-    }
-
-    /**
-     * Return a param from a parsed body.
-     *
-     * This method is NULL or object safe - it will check for body type, and do it's best to return a value without
-     * breaking or throwing a warning.
-     *
-     * @param  ServerRequestInterface $request
-     * @param                         $param_name
-     * @param  null                   $default
-     * @return mixed|null
-     */
-    protected function getParsedBodyParam(ServerRequestInterface $request, $param_name, $default = null)
-    {
-        $parsed_body = $request->getParsedBody();
-
-        if ($parsed_body) {
-            if (is_array($parsed_body) && array_key_exists($param_name, $parsed_body)) {
-                return $parsed_body[$param_name];
-            } elseif (is_object($parsed_body) && property_exists($parsed_body, $param_name)) {
-                return $parsed_body->$param_name;
-            }
-        }
-
-        return $default;
-    }
-
-    /**
-     * @param  ServerRequestInterface $request
-     * @param  string                 $param_name
-     * @param  mixed                  $default
-     * @return mixed
-     */
-    protected function getCookieParam(ServerRequestInterface $request, $param_name, $default = null)
-    {
-        return array_key_exists($param_name, $request->getCookieParams()) ? $request->getCookieParams()[$param_name] : $default;
-    }
-
-    /**
-     * @param  ServerRequestInterface $request
-     * @param  string                 $param_name
-     * @param  mixed                  $default
-     * @return mixed
-     */
-    protected function getQueryParam(ServerRequestInterface $request, $param_name, $default = null)
-    {
-        return array_key_exists($param_name, $request->getQueryParams()) ? $request->getQueryParams()[$param_name] : $default;
-    }
-
-    /**
-     * @param  ServerRequestInterface $request
-     * @param  string                 $param_name
-     * @param  mixed                  $default
-     * @return mixed
-     */
-    protected function getServerParam(ServerRequestInterface $request, $param_name, $default = null)
-    {
-        return array_key_exists($param_name, $request->getServerParams()) ? $request->getServerParams()[$param_name] : $default;
     }
 }

@@ -8,6 +8,7 @@
 
 namespace ActiveCollab\Controller;
 
+use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
 use ActiveCollab\Controller\ResultEncoder\ResultEncoderInterface;
 use Psr\Log\LoggerInterface;
 
@@ -16,6 +17,21 @@ use Psr\Log\LoggerInterface;
  */
 interface ControllerInterface
 {
+    /**
+     * Return action name resolver.
+     *
+     * @return ActionNameResolverInterface
+     */
+    public function getActionNameResolver();
+
+    /**
+     * Set action name resolver interface.
+     *
+     * @param  ActionNameResolverInterface $action_name_resolver
+     * @return $this
+     */
+    public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver);
+
     /**
      * Return action result encoder.
      *
