@@ -23,5 +23,5 @@ interface ActionNameResolverInterface
      * @param  ServerRequestInterface $request
      * @return string
      */
-    public function getActionName(ServerRequestInterface $request): string;
+    public function getActionName(ServerRequestInterface $request);
 }
