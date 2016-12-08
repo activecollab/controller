@@ -8,7 +8,7 @@
     "type": "library",
     "min-stability": "stable",
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.1",
         "activecollab/containeraccess": "^1.0",
         "activecollab/etag": "^1.0",
         "activecollab/templateengine": "^1.0",
