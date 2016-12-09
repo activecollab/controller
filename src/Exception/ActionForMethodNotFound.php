@@ -18,10 +18,11 @@ class ActionForMethodNotFound extends RuntimeException
 {
     /**
      * @param string         $method
+     * @param string         $path
      * @param Exception|null $previous
      */
-    public function __construct($method, Exception $previous = null)
+    public function __construct(string $method, string $path, Exception $previous = null)
     {
-        parent::__construct("Action for $method not found in route definition", 0, $previous);
+        parent::__construct("Action for {$method} {$path} not found.", 0, $previous);
     }
 }

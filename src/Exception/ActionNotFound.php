@@ -23,6 +23,6 @@ class ActionNotFound extends RuntimeException
      */
     public function __construct($controller, $action, Exception $previous = null)
     {
-        parent::__construct("Action '$action' not found in '$controller' controller", 0, $previous);
+        parent::__construct("Action '$action' not found in '$controller' controller.", 0, $previous);
     }
 }
