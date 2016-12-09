@@ -13,44 +13,19 @@ namespace ActiveCollab\Controller\Response;
 use ActiveCollab\TemplateEngine\TemplateEngineInterface;
 use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
 
-/**
- * @package ActiveCollab\Controller\Response
- */
 class ViewResponse implements ViewResponseInterface
 {
-    /**
-     * @var TemplateEngineInterface
-     */
     private $template_engine;
 
-    /**
-     * @var string
-     */
     private $template;
 
-    /**
-     * @var array
-     */
     private $data;
 
-    /**
-     * @var string
-     */
     private $content_type = 'text/html';
 
-    /**
-     * @var string
-     */
     private $encoding = 'UTF-8';
 
-    /**
-     * @param TemplateEngineInterface $template_engine
-     * @param string                  $template
-     * @param array                   $template_data
-     * @param string                  $content_type
-     * @param string                  $encoding
-     */
-    public function __construct(TemplateEngineInterface &$template_engine, $template, array $template_data = [], $content_type = 'text/html', $encoding = 'UTF-8')
+    public function __construct(TemplateEngineInterface &$template_engine, string $template, array $template_data = [], string $content_type = 'text/html', string $encoding = 'UTF-8')
     {
         $this->template_engine = $template_engine;
         $this->template = $template;
@@ -59,10 +34,7 @@ class ViewResponse implements ViewResponseInterface
         $this->encoding = $encoding;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function render(Psr7ResponseInterface $response)
+    public function render(Psr7ResponseInterface $response): Psr7ResponseInterface
     {
         if ($this->getContentType() && $this->getEncoding()) {
             $response = $response->withHeader('Content-Type', $this->getContentType() . ';charset=' . $this->getEncoding());
@@ -73,18 +45,12 @@ class ViewResponse implements ViewResponseInterface
         return $response;
     }
 
-    /**
-     * @return string
-     */
-    public function getContentType()
+    public function getContentType(): string
     {
         return $this->content_type;
     }
 
-    /**
-     * @return string
-     */
-    public function getEncoding()
+    public function getEncoding(): string
     {
         return $this->encoding;
     }

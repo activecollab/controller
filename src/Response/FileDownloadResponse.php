@@ -10,12 +10,10 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Response;
 
+use InvalidArgumentException;
 use RuntimeException;
-use Slim\Http\Response;
-use Slim\Http\Stream;
-use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
-class FileDownloadResponse implements ResponseInterface
+class FileDownloadResponse implements ResponseInterface, FileDownloadResponseInterface
 {
     /**
      * @var string
@@ -25,58 +23,72 @@ class FileDownloadResponse implements ResponseInterface
     /**
      * @var string
      */
+    private $file_name;
+
+    /**
+     * @var string
+     */
     private $content_type;
 
     /**
      * @var bool
      */
-    private $inline;
-
-    /**
-     * @var string
-     */
-    private $filename;
+    private $is_inline;
 
     /**
      * @var string|null
      */
     private $x_type;
 
-    public function __construct(string $file_path, string $content_type, bool $inline = false, string $filename = null, string $x_type = null)
+    public function __construct(string $file_path, string $content_type, bool $is_inline = false, string $file_name = '', string $x_type = '')
     {
+        if (empty($file_path)) {
+            throw new InvalidArgumentException('File path is required.');
+        }
+
         if (!is_file($file_path)) {
-            throw new RuntimeException('Download file not found');
+            throw new RuntimeException('Download file not found.');
         }
 
         $this->file_path = $file_path;
         $this->content_type = $content_type;
-        $this->inline = $inline;
-        $this->filename = $filename;
+
+        if (empty($this->content_type)) {
+            $this->content_type = 'application/octet-stream';
+        }
+
+        $this->is_inline = $is_inline;
+        $this->file_name = $file_name;
+
+        if (empty($this->file_name)) {
+            $this->file_name = basename($file_path);
+        }
+
         $this->x_type = $x_type;
     }
 
-    public function createPsrResponse(PsrResponseInterface $response): PsrResponseInterface
+    public function getFilePath(): string
     {
-        $filename = $this->filename ?: basename($this->file_path);
-        $disposition = $this->inline ? 'inline' : 'attachment';
+        return $this->file_path;
+    }
 
-        $stream = new Stream(fopen($this->file_path, 'rb'));
+    public function getFileName(): string
+    {
+        return $this->file_name;
+    }
 
-        /** @var Response $response */
-        $response = $response
-            ->withHeader('Content-Type', $this->inline ? $this->content_type : 'application/force-download')
-            ->withHeader('Content-Description', $this->inline ? 'Binary' : 'File Transfer')
-            ->withHeader('Content-Transfer-Encoding', 'binary')
-            ->withHeader('Content-Disposition', $disposition . '; filename="' . $filename . '"')
-            ->withHeader('Content-Length', filesize($this->file_path))
-            ->withHeader('Expires', '0')
-            ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
-            ->withHeader('Pragma', 'public');
+    public function getContentType(): string
+    {
+        return $this->content_type;
+    }
 
-        if ($this->x_type) {
-            $response = $response->withHeader('X-Type', $this->x_type);
-        }
+    public function isInline(): bool
+    {
+        return $this->is_inline;
+    }
 
-        return $response->withBody($stream);
+    public function getXType(): string
+    {
+        return $this->x_type;
     }
 }

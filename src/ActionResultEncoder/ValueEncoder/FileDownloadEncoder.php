@@ -10,25 +10,51 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
-use ActiveCollab\Controller\Response\FileDownloadResponse;
+use ActiveCollab\Controller\Response\FileDownloadResponseInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Slim\Http\Stream;
 
 class FileDownloadEncoder implements ValueEncoderInterface
 {
     public function shouldEncode($value): bool
     {
-        return $value instanceof FileDownloadResponse;
+        return $value instanceof FileDownloadResponseInterface;
     }
 
     /**
-     * @param  ServerRequestInterface $request
-     * @param  ResponseInterface      $response
-     * @param  FileDownloadResponse   $value
-     * @return array
+     * @param  ResponseInterface             $response
+     * @param  FileDownloadResponseInterface $value
+     * @return ResponseInterface
      */
-    public function encode(ServerRequestInterface $request, ResponseInterface $response, $value): array
+    public function encode(ResponseInterface $response, $value): ResponseInterface
     {
-        return [$request, $value->createPsrResponse($response)];
+        if ($value->isInline()) {
+            $content_type = $value->getContentType();
+            $disposition = 'inline';
+            $description = 'Binary';
+        } else {
+            $content_type = 'application/force-download';
+            $disposition = 'attachment';
+            $description = 'File Transfer';
+        }
+
+        $stream = new Stream(fopen($value->getFilePath(), 'rb'));
+
+        /** @var ResponseInterface $response */
+        $response = $response
+            ->withHeader('Content-Type', $content_type)
+            ->withHeader('Content-Description', $description)
+            ->withHeader('Content-Transfer-Encoding', 'binary')
+            ->withHeader('Content-Disposition', $disposition . '; filename=' . trim($value->getFileName()))
+            ->withHeader('Content-Length', filesize($value->getFilePath()))
+            ->withHeader('Expires', '0')
+            ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+            ->withHeader('Pragma', 'public');
+
+        if ($value->getXType()) {
+            $response = $response->withHeader('X-Type', $value->getXType());
+        }
+
+        return $response->withBody($stream);
     }
 }

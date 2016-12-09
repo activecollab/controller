@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use LogicException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class ActionResultEncoder
 {
@@ -39,7 +39,7 @@ class ActionResultEncoder
 
         foreach ($this->value_encoders as $value_encoder) {
             if ($value_encoder->shouldEncode($value_encoder)) {
-                list ($request, $response) = $value_encoder->encode($request, $response, $action_result);
+                list($request, $response) = $value_encoder->encode($request, $response, $action_result);
             }
         }
 

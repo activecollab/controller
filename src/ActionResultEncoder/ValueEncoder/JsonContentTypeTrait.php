@@ -12,9 +12,10 @@ namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
 use Psr\Http\Message\ResponseInterface;
 
-interface ValueEncoderInterface
+trait JsonContentTypeTrait
 {
-    public function shouldEncode($value): bool;
-
-    public function encode(ResponseInterface $response, $value): ResponseInterface;
+    public function setJsonContentType(ResponseInterface $response): ResponseInterface
+    {
+        return $response->withHeader('Content-Type', 'application/json;charset=UTF-8');
+    }
 }
