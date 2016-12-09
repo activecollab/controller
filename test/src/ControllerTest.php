@@ -14,8 +14,11 @@ use ActiveCollab\Controller\Test\Base\TestCase;
 use ActiveCollab\Controller\Test\Fixtures\ErrorThrowingController;
 use ActiveCollab\Controller\Test\Fixtures\FixedActionNameResolver;
 use ActiveCollab\Controller\Test\Fixtures\TestController;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use ParseError;
 use LogicException;
@@ -29,6 +32,11 @@ class ControllerTest extends TestCase
     {
         $test_controller = new TestController(new FixedActionNameResolver('throwPhpError'));
         $this->assertEquals('TestController', $test_controller->getControllerName());
+
+        require __DIR__ . '/Fixtures/GlobalNamespaceController.php';
+
+        $test_controller = new \GlobalNamespaceController(new FixedActionNameResolver('throwPhpError'));
+        $this->assertEquals('GlobalNamespaceController', $test_controller->getControllerName());
     }
 
     /**
@@ -124,6 +132,79 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(ParseError::class, $action_result->getPrevious());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Client safe exception message can't be empty.
+     */
+    public function testClientSafePhpErrorMessageCantBeEmpty()
+    {
+        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+            ->setClientSafeExceptionMessage('');
+    }
+
+    public function testClientSafePhpErrorMessageCanBeChanged()
+    {
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+            ->setClientSafeExceptionMessage('Sorry :( {message}');
+
+        $this->assertSame('Sorry :( {message}', $controller->getClientSafeExceptionMessage());
+
+        /** @var ServerRequestInterface $modified_request */
+        $modified_request = null;
+
+        $response = call_user_func($controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
+            $modified_request = $request;
+
+            return $response;
+        });
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+
+        /** @var RuntimeException $action_result */
+        $action_result = $modified_request->getAttribute($controller->getActionResultAttributeName());
+        $this->assertInstanceOf(RuntimeException::class, $action_result);
+        $this->assertEquals('Sorry :( Error parsing our awesome code.', $action_result->getMessage());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Log PHP error message can't be empty.
+     */
+    public function testPhpErrorLogMessageCantBeEmpty()
+    {
+        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+            ->setLogPhpErrorMessage('');
+    }
+
+    public function testPhpErrorLogMessageSet()
+    {
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+            ->setLogPhpErrorMessage('Failed due to a PHP error');
+
+        $this->assertSame('Failed due to a PHP error', $controller->getLogPhpErrorMessage());
+    }
+
+    public function testPhpErrorsAreLogged()
+    {
+        $test_handler = new TestHandler();
+        $logger = new Logger('test', [$test_handler]);
+
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), 'action_result', $logger))
+            ->setLogPhpErrorMessage('Failed due to a PHP error');
+
+        $this->assertInstanceOf(LoggerInterface::class, $controller->getLogger());
+
+        /** @var ServerRequestInterface $modified_request */
+        $modified_request = null;
+
+        $response = call_user_func($controller, $this->createRequest(), $this->createResponse());
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+
+        $this->assertCount(1, $test_handler->getRecords());
+
+        $this->assertSame('Failed due to a PHP error', $test_handler->getRecords()[0]['message']);
+        $this->assertInstanceOf(ParseError::class, $test_handler->getRecords()[0]['context']['exception']);
+    }
+
     public function testExceptionsAreClientSafe()
     {
         $controller = new ErrorThrowingController(new FixedActionNameResolver('throwException'));
@@ -142,5 +223,68 @@ class ControllerTest extends TestCase
         $action_result = $modified_request->getAttribute($controller->getActionResultAttributeName());
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertInstanceOf(LogicException::class, $action_result->getPrevious());
+    }
+
+    public function testClientSafeExceptionMessageCanBeChanged()
+    {
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException')))
+            ->setClientSafeExceptionMessage('Sorry :( {message}');
+
+        $this->assertSame('Sorry :( {message}', $controller->getClientSafeExceptionMessage());
+
+        /** @var ServerRequestInterface $modified_request */
+        $modified_request = null;
+
+        $response = call_user_func($controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
+            $modified_request = $request;
+
+            return $response;
+        });
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+
+        /** @var RuntimeException $action_result */
+        $action_result = $modified_request->getAttribute($controller->getActionResultAttributeName());
+        $this->assertInstanceOf(RuntimeException::class, $action_result);
+        $this->assertEquals('Sorry :( App logic is broken.', $action_result->getMessage());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Log exception message can't be empty.
+     */
+    public function testExceptionLogMessageCantBeEmpty()
+    {
+        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+            ->setLogExceptionMessage('');
+    }
+
+    public function testExceptionLogMessageSet()
+    {
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException')))
+            ->setLogExceptionMessage('Failed due to an exception');
+
+        $this->assertSame('Failed due to an exception', $controller->getLogExceptionMessage());
+    }
+
+    public function testExceptionsAreLogged()
+    {
+        $test_handler = new TestHandler();
+        $logger = new Logger('test', [$test_handler]);
+
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException'), 'action_result', $logger))
+            ->setLogExceptionMessage('Failed due to an exception');
+
+        $this->assertSame('Failed due to an exception', $controller->getLogExceptionMessage());
+        $this->assertInstanceOf(LoggerInterface::class, $controller->getLogger());
+
+        /** @var ServerRequestInterface $modified_request */
+        $modified_request = null;
+
+        $response = call_user_func($controller, $this->createRequest(), $this->createResponse());
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+
+        $this->assertCount(1, $test_handler->getRecords());
+        $this->assertSame('Failed due to an exception', $test_handler->getRecords()[0]['message']);
+        $this->assertInstanceOf(LogicException::class, $test_handler->getRecords()[0]['context']['exception']);
     }
 }

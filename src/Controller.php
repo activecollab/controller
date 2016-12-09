@@ -291,7 +291,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
     private function handlePhpError(Throwable $php_error): Exception
     {
         if ($this->logger) {
-            $this->logger->error($this->getLogExceptionMessage(), [
+            $this->logger->error($this->getLogPhpErrorMessage(), [
                 'exception' => $php_error,
             ]);
         }
