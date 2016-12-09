@@ -6,6 +6,8 @@
  * (c) A51 doo <info@activecollab.com>. All rights reserved.
  */
 
+declare(strict_types=1);
+
 namespace ActiveCollab\Controller\Response\StatusResponse;
 
 use ActiveCollab\Controller\Response\StatusResponse;

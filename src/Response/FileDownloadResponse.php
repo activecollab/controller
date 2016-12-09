@@ -6,21 +6,21 @@
  * (c) A51 doo <info@activecollab.com>. All rights reserved.
  */
 
+declare(strict_types=1);
+
 namespace ActiveCollab\Controller\Response;
 
 use RuntimeException;
 use Slim\Http\Response;
 use Slim\Http\Stream;
+use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
-/**
- * @package ActiveCollab\Controller\Response
- */
 class FileDownloadResponse implements ResponseInterface
 {
     /**
      * @var string
      */
-    private $file;
+    private $file_path;
 
     /**
      * @var string
@@ -42,33 +42,25 @@ class FileDownloadResponse implements ResponseInterface
      */
     private $x_type;
 
-    /**
-     * @param string      $file
-     * @param string      $content_type
-     * @param bool        $inline
-     * @param string      $filename
-     * @param string|null $x_type
-     */
-    public function __construct($file, $content_type, $inline = false, $filename = null, $x_type = null)
+    public function __construct(string $file_path, string $content_type, bool $inline = false, string $filename = null, string $x_type = null)
     {
-        if (!is_file($file)) {
+        if (!is_file($file_path)) {
             throw new RuntimeException('Download file not found');
         }
 
-        $this->file = $file;
+        $this->file_path = $file_path;
         $this->content_type = $content_type;
         $this->inline = $inline;
         $this->filename = $filename;
         $this->x_type = $x_type;
     }
 
-    public function createPsrResponse()
+    public function createPsrResponse(PsrResponseInterface $response): PsrResponseInterface
     {
-        $filename = $this->filename ?: basename($this->file);
+        $filename = $this->filename ?: basename($this->file_path);
         $disposition = $this->inline ? 'inline' : 'attachment';
 
-        $response = new Response();
-        $stream = new Stream(fopen($this->file, 'rb'));
+        $stream = new Stream(fopen($this->file_path, 'rb'));
 
         /** @var Response $response */
         $response = $response
@@ -76,7 +68,7 @@ class FileDownloadResponse implements ResponseInterface
             ->withHeader('Content-Description', $this->inline ? 'Binary' : 'File Transfer')
             ->withHeader('Content-Transfer-Encoding', 'binary')
             ->withHeader('Content-Disposition', $disposition . '; filename="' . $filename . '"')
-            ->withHeader('Content-Length', filesize($this->file))
+            ->withHeader('Content-Length', filesize($this->file_path))
             ->withHeader('Expires', '0')
             ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
             ->withHeader('Pragma', 'public');
