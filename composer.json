@@ -27,5 +27,10 @@
         "psr-4": {
             "ActiveCollab\\Controller\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ActiveCollab\\Controller\\Test\\": "test/src"
+        }
     }
 }
