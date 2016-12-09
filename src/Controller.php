@@ -6,6 +6,8 @@
  * (c) A51 doo <info@activecollab.com>. All rights reserved.
  */
 
+declare(strict_types=1);
+
 namespace ActiveCollab\Controller;
 
 use ActiveCollab\ContainerAccess\ContainerAccessInterface;
@@ -18,7 +20,6 @@ use ActiveCollab\Controller\RequestParamGetter\RequestParamGetterInterface;
 use ActiveCollab\Controller\Response\StatusResponse;
 use Exception;
 use InvalidArgumentException;
-use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -36,6 +37,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
      * @var ActionNameResolverInterface
      */
     private $action_name_resolver;
+
+    /**
+     * @var string
+     */
+    private $action_result_attribute_name;
 
     /**
      * @var LoggerInterface
@@ -59,11 +65,13 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     /**
      * @param ActionNameResolverInterface $action_name_resolver
+     * @param string                      $action_result_attribute_name
      * @param LoggerInterface|null        $logger
      */
-    public function __construct(ActionNameResolverInterface $action_name_resolver, LoggerInterface $logger = null)
+    public function __construct(ActionNameResolverInterface $action_name_resolver, string $action_result_attribute_name = 'action_result', LoggerInterface $logger = null)
     {
         $this->setActionNameResolver($action_name_resolver);
+        $this->setActionResultAttributeName($action_result_attribute_name);
         $this->setLogger($logger);
     }
 
@@ -82,11 +90,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         try {
             $action_name = $this->getActionNameResolver()->getActionName($request);
         } catch (RuntimeException $e) {
-            throw new ActionForMethodNotFound($request->getMethod(), $e);
+            throw new ActionForMethodNotFound($request->getMethod(), $request->getUri()->getPath(), $e);
         }
 
         if (empty($action_name)) {
-            throw new LogicException('Controller action name cannot be empty.');
+            throw new ActionForMethodNotFound($request->getMethod(), $request->getUri()->getPath());
         }
 
         if (!method_exists($this, $action_name)) {
@@ -107,7 +115,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
             }
         }
 
-        $request = $request->withAttribute('action_result', $action_result);
+        $request = $request->withAttribute($this->getActionResultAttributeName(), $action_result);
 
         if ($next) {
             $response = $next($request, $response);
@@ -153,6 +161,24 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
     public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver): ControllerInterface
     {
         $this->action_name_resolver = $action_name_resolver;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getActionResultAttributeName(): string
+    {
+        return $this->action_result_attribute_name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function &setActionResultAttributeName(string $action_result_attribute_name): ControllerInterface
+    {
+        $this->action_result_attribute_name = $action_result_attribute_name;
 
         return $this;
     }

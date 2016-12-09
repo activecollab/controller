@@ -39,6 +39,17 @@ interface ControllerInterface
     public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver): ControllerInterface;
 
     /**
+     * @return string
+     */
+    public function getActionResultAttributeName(): string;
+
+    /**
+     * @param  string              $action_result_attribute_name
+     * @return ControllerInterface
+     */
+    public function &setActionResultAttributeName(string $action_result_attribute_name): ControllerInterface;
+
+    /**
      * Return logger.
      *
      * @return LoggerInterface|null
