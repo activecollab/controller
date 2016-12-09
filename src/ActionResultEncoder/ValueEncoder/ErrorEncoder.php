@@ -55,22 +55,35 @@ class ErrorEncoder implements ValueEncoderInterface
     {
         $response = $this->setJsonContentType($response);
 
-        $error = ['message' => $value->getMessage(), 'type' => get_class($value)];
-        if ($this->getDisplayErrorDetails()) {
-            $error['exception'] = [];
+        $data_to_encode = $this->exceptionToArray($value);
 
-            do {
-                $error['exception'][] = [
-                    'type' => get_class($value),
-                    'code' => $value->getCode(),
-                    'message' => $value->getMessage(),
-                    'file' => $value->getFile(),
-                    'line' => $value->getLine(),
-                    'trace' => explode("\n", $value->getTraceAsString()),
-                ];
-            } while ($value = $value->getPrevious());
+        if ($value->getPrevious()) {
+            $data_to_encode['previous'] = $this->exceptionToArray($value->getPrevious());
         }
 
-        return $response->withStatus(500)->write(json_encode($error));
+        return $response->withStatus(500)->write(json_encode($data_to_encode));
+    }
+
+    /**
+     * @param  \Exception|\Throwable $exception
+     * @return array
+     */
+    private function exceptionToArray($exception)
+    {
+        $result = [
+            'type' => get_class($exception),
+            'message' => $exception->getMessage(),
+            'code' => $exception->getCode(),
+        ];
+
+        if ($this->getDisplayErrorDetails()) {
+            $result = array_merge($result, [
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+        }
+
+        return $result;
     }
 }
