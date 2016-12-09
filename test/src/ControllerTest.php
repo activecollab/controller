@@ -69,6 +69,29 @@ class ControllerTest extends TestCase
         call_user_func($test_controller, $this->createRequest(), $this->createResponse());
     }
 
+    public function testBeforeInterceptsAction()
+    {
+        $before_should_return = [3, 2, 1];
+
+        $test_controller = new TestController(new FixedActionNameResolver('index'));
+        $this->assertSame($before_should_return, $test_controller->setBeforeShouldReturn($before_should_return)->getBeforeShouldReturn());
+
+        /** @var ServerRequestInterface $modified_request */
+        $modified_request = null;
+
+        $response = call_user_func($test_controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
+            $modified_request = $request;
+
+            return $response;
+        });
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+
+        /** @var RuntimeException $action_result */
+        $action_result = $modified_request->getAttribute($test_controller->getActionResultAttributeName());
+        $this->assertInternalType('array', $action_result);
+        $this->assertSame($before_should_return, $action_result);
+    }
+
     public function testActionResult()
     {
         $test_controller = new TestController(new FixedActionNameResolver('index'));

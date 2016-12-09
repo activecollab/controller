@@ -9,6 +9,8 @@
 namespace ActiveCollab\Controller;
 
 use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -16,6 +18,26 @@ use Psr\Log\LoggerInterface;
  */
 interface ControllerInterface
 {
+    /**
+     * Execute before any action.
+     *
+     * If this method returns a value that's not NULL, action execution will be skipped, and that value will be retuned.
+     *
+     * @param  ServerRequestInterface $request
+     * @return mixed
+     */
+    public function __before(ServerRequestInterface $request);
+
+    /**
+     * Handle request, and return the response.
+     *
+     * @param  ServerRequestInterface $request
+     * @param  ResponseInterface      $response
+     * @param  callable|null          $next
+     * @return ResponseInterface
+     */
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface;
+
     /**
      * Return controller name, without namespace.
      *

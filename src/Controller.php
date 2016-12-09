@@ -17,7 +17,6 @@ use ActiveCollab\Controller\Exception\ActionForMethodNotFound;
 use ActiveCollab\Controller\Exception\ActionNotFound;
 use ActiveCollab\Controller\RequestParamGetter\Implementation as RequestParamGetterImplementation;
 use ActiveCollab\Controller\RequestParamGetter\RequestParamGetterInterface;
-use ActiveCollab\Controller\Response\StatusResponse;
 use Exception;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -78,14 +77,15 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
     /**
      * {@inheritdoc}
      */
-    protected function __before(ServerRequestInterface $request)
+    public function __before(ServerRequestInterface $request)
     {
+        return null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         try {
             $action_name = $this->getActionNameResolver()->getActionName($request);
@@ -105,7 +105,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         $action_result = $this->__before($request);
 
         // If __before() did not exist with a status response, call the action.
-        if (!$action_result instanceof StatusResponse) {
+        if ($action_result === null) {
             try {
                 $action_result = call_user_func([&$this, $action_name], $request);
             } catch (Exception $exception) {
