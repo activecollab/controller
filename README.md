@@ -1,5 +1,7 @@
 # Controller
 
+[![Build Status](https://travis-ci.org/activecollab/controller.svg?branch=v1.0)](https://travis-ci.org/activecollab/controller)
+
 Supported action responses:
 
 1. `\ActiveCollab\Controller\Response\FileDownloadResponse` - streams a file download.
