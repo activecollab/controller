@@ -19,13 +19,14 @@ class ForbiddenStatusResponse extends StatusResponse
 {
     /**
      * @param string $message
+     * @param mixed  $payload
      */
-    public function __construct($message = '')
+    public function __construct($message = '', $payload = null)
     {
         if (empty($message)) {
             $message = 'Forbidden';
         }
 
-        parent::__construct(403, $message);
+        parent::__construct(403, $message, $payload);
     }
 }

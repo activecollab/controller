@@ -19,13 +19,14 @@ class OkStatusResponse extends StatusResponse
 {
     /**
      * @param string $message
+     * @param mixed  $payload
      */
-    public function __construct($message = '')
+    public function __construct($message = '', $payload = null)
     {
         if (empty($message)) {
             $message = 'OK';
         }
 
-        parent::__construct(200, $message);
+        parent::__construct(200, $message, $payload);
     }
 }

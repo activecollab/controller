@@ -19,13 +19,14 @@ class BadRequestStatusResponse extends StatusResponse
 {
     /**
      * @param string $message
+     * @param mixed  $payload
      */
-    public function __construct($message = '')
+    public function __construct($message = '', $payload = null)
     {
         if (empty($message)) {
             $message = 'Bad request';
         }
 
-        parent::__construct(400, $message);
+        parent::__construct(400, $message, $payload);
     }
 }
