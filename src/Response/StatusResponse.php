@@ -9,6 +9,7 @@
 declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Response;
+use LogicException;
 
 class StatusResponse implements StatusResponseInterface
 {
@@ -20,6 +21,10 @@ class StatusResponse implements StatusResponseInterface
 
     public function __construct($http_code, $message = '', $payload = null)
     {
+        if ($payload instanceof StatusResponseInterface) {
+            throw new LogicException('Status response is not an acceptible payload.');
+        }
+
         $this->http_code = $http_code;
         $this->message = $message;
         $this->payload = $payload;
