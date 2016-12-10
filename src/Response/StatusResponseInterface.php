@@ -10,18 +10,11 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Response;
 
-/**
- * @package ActiveCollab\Controller\Response
- */
 interface StatusResponseInterface extends ResponseInterface
 {
-    /**
-     * @return int
-     */
-    public function getHttpCode();
+    public function getHttpCode(): int;
 
-    /**
-     * @return string
-     */
-    public function getMessage();
+    public function getMessage(): string;
+
+    public function getPayload();
 }

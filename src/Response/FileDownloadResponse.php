@@ -15,29 +15,14 @@ use RuntimeException;
 
 class FileDownloadResponse implements ResponseInterface, FileDownloadResponseInterface
 {
-    /**
-     * @var string
-     */
     private $file_path;
 
-    /**
-     * @var string
-     */
     private $file_name;
 
-    /**
-     * @var string
-     */
     private $content_type;
 
-    /**
-     * @var bool
-     */
     private $is_inline;
 
-    /**
-     * @var string|null
-     */
     private $x_type;
 
     public function __construct(string $file_path, string $content_type, bool $is_inline = false, string $file_name = '', string $x_type = '')

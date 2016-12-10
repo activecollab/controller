@@ -10,44 +10,32 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Response;
 
-/**
- * @package ActiveCollab\Controller\Response\StatusResponse
- */
 class StatusResponse implements StatusResponseInterface
 {
-    /**
-     * @var int
-     */
     private $http_code;
 
-    /**
-     * @var string
-     */
     private $message;
 
-    /**
-     * @param int    $http_code
-     * @param string $message
-     */
-    public function __construct($http_code, $message = '')
+    private $payload;
+
+    public function __construct($http_code, $message = '', $payload = null)
     {
         $this->http_code = $http_code;
         $this->message = $message;
     }
 
-    /**
-     * @return int
-     */
-    public function getHttpCode()
+    public function getHttpCode(): int
     {
         return $this->http_code;
     }
 
-    /**
-     * @return string
-     */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
+    }
+
+    public function getPayload()
+    {
+        return $this->payload;
     }
 }
