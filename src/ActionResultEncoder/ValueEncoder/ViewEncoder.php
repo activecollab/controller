@@ -13,7 +13,7 @@ namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 use ActiveCollab\Controller\Response\ViewResponseInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ViewEncoder implements ValueEncoderInterface
+class ViewEncoder extends ValueEncoder
 {
     public function shouldEncode($value): bool
     {
@@ -31,8 +31,6 @@ class ViewEncoder implements ValueEncoderInterface
             $response = $response->withHeader('Content-Type', $value->getContentType() . ';charset=' . $value->getEncoding());
         }
 
-        $response->getBody()->write($value->fetch());
-
-        return $response;
+        return $response->withBody($this->createBodyFromText($value->fetch()));
     }
 }

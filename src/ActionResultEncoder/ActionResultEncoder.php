@@ -8,11 +8,12 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
+namespace ActiveCollab\Controller\ActionResultEncoder;
 
 use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
 
 class ActionResultEncoder implements ActionResultEncoderInterface
 {

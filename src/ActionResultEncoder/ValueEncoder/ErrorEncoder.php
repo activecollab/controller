@@ -13,7 +13,7 @@ namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
-class ErrorEncoder implements ValueEncoderInterface
+class ErrorEncoder extends ValueEncoder
 {
     use JsonContentTypeTrait;
 
@@ -61,7 +61,7 @@ class ErrorEncoder implements ValueEncoderInterface
             $data_to_encode['previous'] = $this->exceptionToArray($value->getPrevious());
         }
 
-        return $response->withStatus(500)->write(json_encode($data_to_encode));
+        return $response->withStatus(500)->withBody($this->createBodyFromText(json_encode($data_to_encode)));
     }
 
     /**

@@ -14,7 +14,7 @@ use ActiveCollab\Controller\Response\FileDownloadResponseInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Stream;
 
-class FileDownloadEncoder implements ValueEncoderInterface
+class FileDownloadEncoder extends ValueEncoder
 {
     public function shouldEncode($value): bool
     {

@@ -8,7 +8,9 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
+namespace ActiveCollab\Controller\ActionResultEncoder;
+
+use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
 
 interface ActionResultEncoderInterface
 {

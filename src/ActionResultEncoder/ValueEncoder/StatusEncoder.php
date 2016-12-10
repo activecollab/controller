@@ -10,24 +10,23 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
+use ActiveCollab\Controller\Response\StatusResponseInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class NullEncoder extends ValueEncoder
+class StatusEncoder extends ValueEncoder
 {
-    use JsonContentTypeTrait;
-
     public function shouldEncode($value): bool
     {
-        return $value === null;
+        return $value instanceof StatusResponseInterface;
     }
 
     /**
-     * @param  ResponseInterface $response
-     * @param  null              $value
+     * @param  ResponseInterface       $response
+     * @param  StatusResponseInterface $value
      * @return ResponseInterface
      */
     public function encode(ResponseInterface $response, $value): ResponseInterface
     {
-        return $this->setJsonContentType($response);
+        return $response->withStatus($value->getHttpCode(), $value->getMessage());
     }
 }
