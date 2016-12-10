@@ -10,9 +10,11 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Response;
 
-use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
-
 interface ViewResponseInterface extends ResponseInterface
 {
-    public function render(Psr7ResponseInterface $response): Psr7ResponseInterface;
+    public function getContentType(): string;
+
+    public function getEncoding(): string;
+
+    public function fetch(): string;
 }

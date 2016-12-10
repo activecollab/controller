@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\Response;
 
 use ActiveCollab\TemplateEngine\TemplateEngineInterface;
-use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
 
 class ViewResponse implements ViewResponseInterface
 {
@@ -19,30 +18,24 @@ class ViewResponse implements ViewResponseInterface
 
     private $template;
 
-    private $data;
+    private $template_data;
 
     private $content_type = 'text/html';
 
     private $encoding = 'UTF-8';
 
-    public function __construct(TemplateEngineInterface &$template_engine, string $template, array $template_data = [], string $content_type = 'text/html', string $encoding = 'UTF-8')
+    public function __construct(TemplateEngineInterface $template_engine, string $template, array $data = [], string $content_type = 'text/html', string $encoding = 'UTF-8')
     {
         $this->template_engine = $template_engine;
         $this->template = $template;
-        $this->data = $template_data;
+        $this->template_data = $data;
         $this->content_type = $content_type;
         $this->encoding = $encoding;
     }
 
-    public function render(Psr7ResponseInterface $response): Psr7ResponseInterface
+    public function fetch(): string
     {
-        if ($this->getContentType() && $this->getEncoding()) {
-            $response = $response->withHeader('Content-Type', $this->getContentType() . ';charset=' . $this->getEncoding());
-        }
-
-        $response->getBody()->write($this->template_engine->fetch($this->template, $this->data));
-
-        return $response;
+        return $this->template_engine->fetch($this->template, $this->template_data);
     }
 
     public function getContentType(): string

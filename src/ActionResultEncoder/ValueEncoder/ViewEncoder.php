@@ -27,6 +27,12 @@ class ViewEncoder implements ValueEncoderInterface
      */
     public function encode(ResponseInterface $response, $value): ResponseInterface
     {
-        return $value->render($response);
+        if ($value->getContentType() && $value->getEncoding()) {
+            $response = $response->withHeader('Content-Type', $value->getContentType() . ';charset=' . $value->getEncoding());
+        }
+
+        $response->getBody()->write($value->fetch());
+
+        return $response;
     }
 }

@@ -14,7 +14,7 @@ use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ActionResultEncoder
+class ActionResultEncoder implements ActionResultEncoderInterface
 {
     private $request_attribute_name;
 
@@ -33,13 +33,21 @@ class ActionResultEncoder
         $this->value_encoders = $value_encoders;
     }
 
+    public function &addValueEncoder(ValueEncoderInterface $value_encoder): ActionResultEncoderInterface
+    {
+        $this->value_encoders[] = $value_encoder;
+
+        return $this;
+    }
+
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         $action_result = $request->getAttribute($this->request_attribute_name);
 
         foreach ($this->value_encoders as $value_encoder) {
             if ($value_encoder->shouldEncode($value_encoder)) {
-                list($request, $response) = $value_encoder->encode($request, $response, $action_result);
+                $response = $value_encoder->encode($response, $action_result);
+                break;
             }
         }
 
