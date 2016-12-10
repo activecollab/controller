@@ -15,7 +15,7 @@ use ActiveCollab\Controller\ActionResult\StatusResult;
 /**
  * @package ActiveCollab\Controller\Response\StatusResponse
  */
-class OkStatusResult extends StatusResult
+class OkStatusResponse extends StatusResult
 {
     /**
      * @param string $message

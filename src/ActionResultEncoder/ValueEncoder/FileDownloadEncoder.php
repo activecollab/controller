@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
-use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use ActiveCollab\Controller\ActionResult\FileDownloadResultInterface;
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Stream;
 

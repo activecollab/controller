@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResult;
 
-use ActiveCollab\Controller\ActionResult\ViewResultInterface;
 use ActiveCollab\TemplateEngine\TemplateEngineInterface;
 
 class ViewResult implements ViewResultInterface

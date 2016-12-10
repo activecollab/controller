@@ -15,7 +15,7 @@ use ActiveCollab\Controller\ActionResult\StatusResult;
 /**
  * @package ActiveCollab\Controller\Response\StatusResponse
  */
-class ForbiddenStatusResult extends StatusResult
+class ForbiddenStatusResponse extends StatusResult
 {
     /**
      * @param string $message

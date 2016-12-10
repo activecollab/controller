@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResult;
 
-use ActiveCollab\Controller\ActionResult\ActionResultInterface;
-use ActiveCollab\Controller\ActionResult\FileDownloadResultInterface;
 use InvalidArgumentException;
 use RuntimeException;
 

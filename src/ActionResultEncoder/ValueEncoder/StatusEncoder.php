@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
-use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use ActiveCollab\Controller\ActionResult\StatusResultInterface;
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class StatusEncoder extends ValueEncoder

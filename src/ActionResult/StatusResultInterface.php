@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResult;
 
-use ActiveCollab\Controller\ActionResult\ActionResultInterface;
-
 interface StatusResultInterface extends ActionResultInterface
 {
     public function getHttpCode(): int;

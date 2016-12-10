@@ -8,8 +8,6 @@
 
 namespace ActiveCollab\Controller\ActionResult;
 
-use ActiveCollab\Controller\ActionResult\ActionResultInterface;
-
 interface FileDownloadResultInterface extends ActionResultInterface
 {
     public function getFilePath(): string;
