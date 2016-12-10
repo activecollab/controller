@@ -8,14 +8,14 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\Response\StatusResponse;
+namespace ActiveCollab\Controller\ActionResult\StatusResult;
 
 use ActiveCollab\Controller\ActionResult\StatusResult;
 
 /**
  * @package ActiveCollab\Controller\Response\StatusResponse
  */
-class NotFoundStatusResponse extends StatusResult
+class BadRequest extends StatusResult
 {
     /**
      * @param string $message
@@ -24,9 +24,9 @@ class NotFoundStatusResponse extends StatusResult
     public function __construct($message = '', $payload = null)
     {
         if (empty($message)) {
-            $message = 'Not found';
+            $message = 'Bad request';
         }
 
-        parent::__construct(404, $message, $payload);
+        parent::__construct(400, $message, $payload);
     }
 }

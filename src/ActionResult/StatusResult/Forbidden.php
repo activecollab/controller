@@ -8,14 +8,14 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\Response\StatusResponse;
+namespace ActiveCollab\Controller\ActionResult\StatusResult;
 
 use ActiveCollab\Controller\ActionResult\StatusResult;
 
 /**
  * @package ActiveCollab\Controller\Response\StatusResponse
  */
-class OkStatusResponse extends StatusResult
+class Forbidden extends StatusResult
 {
     /**
      * @param string $message
@@ -24,9 +24,9 @@ class OkStatusResponse extends StatusResult
     public function __construct($message = '', $payload = null)
     {
         if (empty($message)) {
-            $message = 'OK';
+            $message = 'Forbidden';
         }
 
-        parent::__construct(200, $message, $payload);
+        parent::__construct(403, $message, $payload);
     }
 }
