@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
+use ActiveCollab\Controller\ActionResult\FileDownloadResult;
 use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\FileDownloadEncoder;
-use ActiveCollab\Controller\ActionResult\FileDownloadResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 use Psr\Http\Message\ResponseInterface;
 

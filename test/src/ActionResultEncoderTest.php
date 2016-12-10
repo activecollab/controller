@@ -12,8 +12,8 @@ namespace ActiveCollab\Controller\Test;
 
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ArrayEncoder;
-use Psr\Http\Message\ResponseInterface;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class ActionResultEncoderTest extends TestCase
@@ -85,7 +85,7 @@ class ActionResultEncoderTest extends TestCase
         $this->assertCount(1, $encoder->getValueEncoders());
 
         /** @var ResponseInterface $response */
-        $response = call_user_func($encoder, $this->createRequest()->withAttribute('action_result', [1, 2, 3]), $this->createResponse(), function(ServerRequestInterface $request, ResponseInterface $response) {
+        $response = call_user_func($encoder, $this->createRequest()->withAttribute('action_result', [1, 2, 3]), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) {
             return $response->withHeader('X-Next-Middleware', 'Header Found!');
         });
         $this->assertInstanceOf(ResponseInterface::class, $response);

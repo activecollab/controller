@@ -14,14 +14,14 @@ use ActiveCollab\Controller\Test\Base\TestCase;
 use ActiveCollab\Controller\Test\Fixtures\ErrorThrowingController;
 use ActiveCollab\Controller\Test\Fixtures\FixedActionNameResolver;
 use ActiveCollab\Controller\Test\Fixtures\TestController;
+use LogicException;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
+use ParseError;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use ParseError;
-use LogicException;
 
 /**
  * @package ActiveCollab\Controller\Test
@@ -126,7 +126,7 @@ class ControllerTest extends TestCase
         });
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
-        /** @var RuntimeException $action_result */
+        /* @var RuntimeException $action_result */
         $this->assertArrayNotHasKey('action_result', $modified_request->getAttributes());
         $this->assertArrayHasKey('new_action_result_key', $modified_request->getAttributes());
 

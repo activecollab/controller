@@ -11,8 +11,8 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\Test\Fixtures;
 
 use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Exception;
+use Psr\Http\Message\ServerRequestInterface;
 
 class FixedActionNameResolver implements ActionNameResolverInterface
 {

@@ -14,7 +14,7 @@ use ActiveCollab\Controller\ActionResult\StatusResult;
 use ActiveCollab\Controller\ActionResult\StatusResult\BadRequest;
 use ActiveCollab\Controller\Test\Base\TestCase;
 
-class StatusResponseTest extends TestCase
+class StatusResultTest extends TestCase
 {
     /**
      * @expectedException \LogicException
