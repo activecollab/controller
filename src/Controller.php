@@ -15,7 +15,6 @@ use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as Cont
 use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
 use ActiveCollab\Controller\Exception\ActionForMethodNotFound;
 use ActiveCollab\Controller\Exception\ActionNotFound;
-use ActiveCollab\Controller\RequestParamGetter\Implementation as RequestParamGetterImplementation;
 use ActiveCollab\Controller\RequestParamGetter\RequestParamGetterInterface;
 use Exception;
 use InvalidArgumentException;
@@ -30,16 +29,10 @@ use Throwable;
  */
 abstract class Controller implements ContainerAccessInterface, ControllerInterface, RequestParamGetterInterface
 {
-    use ContainerAccessInterfaceImplementation, RequestParamGetterImplementation;
+    use ContainerAccessInterfaceImplementation;
 
-    /**
-     * @var ActionNameResolverInterface
-     */
     private $action_name_resolver;
 
-    /**
-     * @var string
-     */
     private $action_result_attribute_name;
 
     /**
@@ -47,26 +40,12 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
      */
     private $logger;
 
-    /**
-     * @var string
-     */
     private $client_safe_exception_message = 'Whoops, something went wrong...';
 
-    /**
-     * @var string
-     */
     private $log_exception_message = 'Controller action aborted due to an exception.';
 
-    /**
-     * @var string
-     */
     private $log_php_error_message = 'Controller action aborted due to a PHP error.';
 
-    /**
-     * @param ActionNameResolverInterface $action_name_resolver
-     * @param string                      $action_result_attribute_name
-     * @param LoggerInterface|null        $logger
-     */
     public function __construct(ActionNameResolverInterface $action_name_resolver, string $action_result_attribute_name = 'action_result', LoggerInterface $logger = null)
     {
         $this->setActionNameResolver($action_name_resolver);
@@ -74,17 +53,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         $this->setLogger($logger);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __before(ServerRequestInterface $request)
     {
         return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         try {
@@ -124,14 +97,8 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $response;
     }
 
-    /**
-     * @var string
-     */
     private $controller_name;
 
-    /**
-     * {@inheritdoc}
-     */
     public function getControllerName(): string
     {
         if (empty($this->controller_name)) {
@@ -147,17 +114,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this->controller_name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getActionNameResolver(): ActionNameResolverInterface
     {
         return $this->action_name_resolver;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver): ControllerInterface
     {
         $this->action_name_resolver = $action_name_resolver;
@@ -165,17 +126,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getActionResultAttributeName(): string
     {
         return $this->action_result_attribute_name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function &setActionResultAttributeName(string $action_result_attribute_name): ControllerInterface
     {
         $this->action_result_attribute_name = $action_result_attribute_name;
@@ -183,17 +138,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getLogger()
     {
         return $this->logger;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function &setLogger(LoggerInterface $logger = null): ControllerInterface
     {
         $this->logger = $logger;
@@ -201,17 +150,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getClientSafeExceptionMessage(): string
     {
         return $this->client_safe_exception_message;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function &setClientSafeExceptionMessage(string $message): ControllerInterface
     {
         if (empty($message)) {
@@ -223,17 +166,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getLogExceptionMessage(): string
     {
         return $this->log_exception_message;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function &setLogExceptionMessage(string $message): ControllerInterface
     {
         if (empty($message)) {
@@ -245,17 +182,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getLogPhpErrorMessage(): string
     {
         return $this->log_php_error_message;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function &setLogPhpErrorMessage(string $message): ControllerInterface
     {
         if (empty($message)) {
@@ -267,10 +198,6 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    /**
-     * @param  Exception $exception
-     * @return Exception
-     */
     private function handleException(Exception $exception): Exception
     {
         if ($this->logger) {
@@ -284,10 +211,6 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return new RuntimeException($exception_message, 0, $exception);
     }
 
-    /**
-     * @param  Throwable $php_error
-     * @return Exception
-     */
     private function handlePhpError(Throwable $php_error): Exception
     {
         if ($this->logger) {
@@ -301,10 +224,6 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return new RuntimeException($exception_message, 0, $php_error);
     }
 
-    /**
-     * @param  Throwable $error
-     * @return string
-     */
     private function prepareClientSafeErrorMessage(Throwable $error): string
     {
         $exception_message = $this->getClientSafeExceptionMessage();
@@ -314,5 +233,35 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         }
 
         return $exception_message;
+    }
+
+    public function getParsedBodyParam(ServerRequestInterface $request, $param_name, $default = null)
+    {
+        $parsed_body = $request->getParsedBody();
+
+        if ($parsed_body) {
+            if (is_array($parsed_body) && array_key_exists($param_name, $parsed_body)) {
+                return $parsed_body[$param_name];
+            } elseif (is_object($parsed_body) && property_exists($parsed_body, $param_name)) {
+                return $parsed_body->$param_name;
+            }
+        }
+
+        return $default;
+    }
+
+    public function getCookieParam(ServerRequestInterface $request, $param_name, $default = null)
+    {
+        return array_key_exists($param_name, $request->getCookieParams()) ? $request->getCookieParams()[$param_name] : $default;
+    }
+
+    public function getQueryParam(ServerRequestInterface $request, $param_name, $default = null)
+    {
+        return array_key_exists($param_name, $request->getQueryParams()) ? $request->getQueryParams()[$param_name] : $default;
+    }
+
+    public function getServerParam(ServerRequestInterface $request, $param_name, $default = null)
+    {
+        return array_key_exists($param_name, $request->getServerParams()) ? $request->getServerParams()[$param_name] : $default;
     }
 }

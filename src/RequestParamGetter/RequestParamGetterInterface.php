@@ -10,9 +10,6 @@ namespace ActiveCollab\Controller\RequestParamGetter;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @package ActiveCollab\Controller\RequestParamGetter
- */
 interface RequestParamGetterInterface
 {
     /**
