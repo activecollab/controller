@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use ActiveCollab\Controller\Response\FileDownloadResponseInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Stream;
@@ -23,10 +24,11 @@ class FileDownloadEncoder extends ValueEncoder
 
     /**
      * @param  ResponseInterface             $response
+     * @param  ActionResultEncoderInterface  $encoder
      * @param  FileDownloadResponseInterface $value
      * @return ResponseInterface
      */
-    public function encode(ResponseInterface $response, $value): ResponseInterface
+    public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface
     {
         if ($value->isInline()) {
             $content_type = $value->getContentType();

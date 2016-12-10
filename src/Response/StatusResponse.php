@@ -22,6 +22,7 @@ class StatusResponse implements StatusResponseInterface
     {
         $this->http_code = $http_code;
         $this->message = $message;
+        $this->payload = $payload;
     }
 
     public function getHttpCode(): int

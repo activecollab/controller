@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\FileDownloadEncoder;
 use ActiveCollab\Controller\Response\FileDownloadResponse;
 use ActiveCollab\Controller\Response\StatusResponse\OkStatusResponse;
@@ -31,7 +32,7 @@ class FileDownloadEncoderTest extends TestCase
 
         $file_download = new FileDownloadResponse(__FILE__, 'text/php');
 
-        $response = (new FileDownloadEncoder())->encode($response, $file_download);
+        $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder(), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 
@@ -69,7 +70,7 @@ class FileDownloadEncoderTest extends TestCase
 
         $file_download = new FileDownloadResponse(__FILE__, 'text/php', true);
 
-        $response = (new FileDownloadEncoder())->encode($response, $file_download);
+        $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder(), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 

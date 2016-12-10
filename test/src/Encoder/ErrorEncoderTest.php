@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ErrorEncoder;
 use ActiveCollab\Controller\Response\StatusResponse\OkStatusResponse;
 use ActiveCollab\Controller\Test\Base\TestCase;
@@ -38,7 +39,7 @@ class ErrorEncoderTest extends TestCase
         $encoder = new ErrorEncoder();
         $this->assertFalse($encoder->getDisplayErrorDetails());
 
-        $response = $encoder->encode($response, $exception);
+        $response = $encoder->encode($response, new ActionResultEncoder(), $exception);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
         $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));
@@ -65,7 +66,7 @@ class ErrorEncoderTest extends TestCase
         $encoder->setDisplayErrorDetails(true);
         $this->assertTrue($encoder->getDisplayErrorDetails());
 
-        $response = $encoder->encode($response, $exception);
+        $response = $encoder->encode($response, new ActionResultEncoder(), $exception);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
         $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));

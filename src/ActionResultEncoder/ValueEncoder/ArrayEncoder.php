@@ -13,23 +13,25 @@ namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class NullEncoder extends ValueEncoder
+class ArrayEncoder extends ValueEncoder
 {
     use JsonContentTypeTrait;
 
     public function shouldEncode($value): bool
     {
-        return $value === null;
+        return is_array($value);
     }
 
     /**
      * @param  ResponseInterface            $response
      * @param  ActionResultEncoderInterface $encoder
-     * @param  null                         $value
+     * @param  array                        $value
      * @return ResponseInterface
      */
     public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface
     {
-        return $this->setJsonContentType($response);
+        $response = $this->setJsonContentType($response);
+
+        return $response->withBody($this->createBodyFromText(json_encode($value)));
     }
 }

@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
-use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use Slim\Http\Stream;
 
@@ -19,20 +18,11 @@ abstract class ValueEncoder implements ValueEncoderInterface
     /**
      * Create the message body.
      *
-     * @param  string|StreamInterface   $text
+     * @param  string          $text
      * @return StreamInterface
-     * @throws InvalidArgumentException if $html is neither a string or stream
      */
-    protected function createBodyFromText($text): StreamInterface
+    protected function createBodyFromText(string $text): StreamInterface
     {
-        if ($text instanceof StreamInterface) {
-            return $text;
-        }
-
-        if (!is_string($text)) {
-            throw new InvalidArgumentException(sprintf('Invalid content (%s) provided to %s', (is_object($text) ? get_class($text) : gettype($text)), __CLASS__));
-        }
-
         $handle = fopen('php://temp', 'wb+');
 
         $body = new Stream($handle);

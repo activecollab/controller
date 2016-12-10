@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
+use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ArrayEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\StatusEncoder;
 use ActiveCollab\Controller\Response\StatusResponse;
 use ActiveCollab\Controller\Test\Base\TestCase;
@@ -28,7 +30,7 @@ class StatusEncoderTest extends TestCase
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $response = (new StatusEncoder())->encode($response, new StatusResponse(200, 'All good.'));
+        $response = (new StatusEncoder())->encode($response, new ActionResultEncoder(), new StatusResponse(200, 'All good.'));
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 
@@ -42,7 +44,10 @@ class StatusEncoderTest extends TestCase
 
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $response = (new StatusEncoder())->encode($response, new StatusResponse(200, 'All good.', $data_to_encode));
+        $encoder = new ActionResultEncoder('action_result', new ArrayEncoder());
+        $this->assertCount(1, $encoder->getValueEncoders());
+
+        $response = (new StatusEncoder())->encode($response, $encoder, new StatusResponse(200, 'All good.', $data_to_encode));
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
         $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));

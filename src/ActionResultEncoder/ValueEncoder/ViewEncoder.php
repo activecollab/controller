@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use ActiveCollab\Controller\Response\ViewResponseInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -21,11 +22,12 @@ class ViewEncoder extends ValueEncoder
     }
 
     /**
-     * @param  ResponseInterface     $response
-     * @param  ViewResponseInterface $value
+     * @param  ResponseInterface            $response
+     * @param  ActionResultEncoderInterface $encoder
+     * @param  ViewResponseInterface        $value
      * @return ResponseInterface
      */
-    public function encode(ResponseInterface $response, $value): ResponseInterface
+    public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface
     {
         if ($value->getContentType() && $value->getEncoding()) {
             $response = $response->withHeader('Content-Type', $value->getContentType() . ';charset=' . $value->getEncoding());

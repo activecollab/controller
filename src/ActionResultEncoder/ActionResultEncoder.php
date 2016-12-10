@@ -10,10 +10,11 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder;
 
+use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
 use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
+use RuntimeException;
 
 class ActionResultEncoder implements ActionResultEncoderInterface
 {
@@ -34,6 +35,23 @@ class ActionResultEncoder implements ActionResultEncoderInterface
         $this->value_encoders = $value_encoders;
     }
 
+    public function getRequestAttributeName(): string
+    {
+        return $this->request_attribute_name;
+    }
+
+    public function &setRequestAttributeName(string $request_attribute_name): ActionResultEncoderInterface
+    {
+        $this->request_attribute_name = $request_attribute_name;
+
+        return $this;
+    }
+
+    public function getValueEncoders(): array
+    {
+        return $this->value_encoders;
+    }
+
     public function &addValueEncoder(ValueEncoderInterface $value_encoder): ActionResultEncoderInterface
     {
         $this->value_encoders[] = $value_encoder;
@@ -43,19 +61,32 @@ class ActionResultEncoder implements ActionResultEncoderInterface
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
-        $action_result = $request->getAttribute($this->request_attribute_name);
-
-        foreach ($this->value_encoders as $value_encoder) {
-            if ($value_encoder->shouldEncode($value_encoder)) {
-                $response = $value_encoder->encode($response, $action_result);
-                break;
-            }
+        if (!array_key_exists($this->request_attribute_name, $request->getAttributes())) {
+            throw new RuntimeException("Request attribute '{$this->request_attribute_name}' not found.");
         }
+
+        $response = $this->encode($response, $request->getAttribute($this->request_attribute_name));
 
         if ($next) {
             $response = $next($request, $response);
         }
 
         return $response;
+    }
+
+    public function encode(ResponseInterface $response, $value): ResponseInterface
+    {
+        foreach ($this->value_encoders as $value_encoder) {
+            if ($value_encoder->shouldEncode($value)) {
+                return $value_encoder->encode($response, $this, $value);
+            }
+        }
+
+        throw new RuntimeException("No matching encoder for value of {$this->getValueType($value)} type found.");
+    }
+
+    private function getValueType($value): string
+    {
+        return is_object($value) ? get_class($value) : gettype($value);
     }
 }

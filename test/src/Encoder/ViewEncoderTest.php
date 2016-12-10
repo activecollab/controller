@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ViewEncoder;
 use ActiveCollab\Controller\Response\StatusResponse\OkStatusResponse;
 use ActiveCollab\Controller\Response\ViewResponse;
@@ -48,7 +49,7 @@ class ViewEncoderTest extends TestCase
             'first_name' => 'John Doe',
         ]);
 
-        $response = (new ViewEncoder($this->template_engine))->encode($response, $view);
+        $response = (new ViewEncoder($this->template_engine))->encode($response, new ActionResultEncoder(), $view);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
         $this->assertContains('text/html', $response->getHeaderLine('Content-Type'));

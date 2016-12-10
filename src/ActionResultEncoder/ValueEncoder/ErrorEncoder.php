@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
+use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
@@ -47,11 +48,12 @@ class ErrorEncoder extends ValueEncoder
     }
 
     /**
-     * @param  ResponseInterface $response
-     * @param  Throwable         $value
+     * @param  ResponseInterface            $response
+     * @param  ActionResultEncoderInterface $encoder
+     * @param  Throwable                    $value
      * @return ResponseInterface
      */
-    public function encode(ResponseInterface $response, $value): ResponseInterface
+    public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface
     {
         $response = $this->setJsonContentType($response);
 
