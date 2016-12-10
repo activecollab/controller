@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\ActionResultEncoder;
 
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
-use LogicException;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -28,7 +28,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface
     public function __construct(string $request_attribute_name = 'action_result', ValueEncoderInterface ...$value_encoders)
     {
         if (empty($request_attribute_name)) {
-            throw new LogicException('Request attribute name is required.');
+            throw new InvalidArgumentException('Request attribute name is required.');
         }
 
         $this->request_attribute_name = $request_attribute_name;
