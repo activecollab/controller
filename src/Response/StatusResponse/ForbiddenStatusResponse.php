@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Response\StatusResponse;
 
-use ActiveCollab\Controller\Response\StatusResponse;
+use ActiveCollab\Controller\ActionResult\StatusResult;
 
 /**
  * @package ActiveCollab\Controller\Response\StatusResponse
  */
-class ForbiddenStatusResponse extends StatusResponse
+class ForbiddenStatusResult extends StatusResult
 {
     /**
      * @param string $message

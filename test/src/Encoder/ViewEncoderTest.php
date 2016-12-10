@@ -12,8 +12,8 @@ namespace ActiveCollab\Controller\Test\Encoder;
 
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ViewEncoder;
-use ActiveCollab\Controller\Response\StatusResponse\OkStatusResponse;
-use ActiveCollab\Controller\Response\ViewResponse;
+use ActiveCollab\Controller\Response\StatusResponse\OkStatusResult;
+use ActiveCollab\Controller\ActionResult\ViewResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 use ActiveCollab\TemplateEngine\TemplateEngine\PhpTemplateEngine;
 use Psr\Http\Message\ResponseInterface;
@@ -37,15 +37,15 @@ class ViewEncoderTest extends TestCase
     public function testShouldEncode()
     {
         $this->assertFalse((new ViewEncoder())->shouldEncode([1, 2, 3]));
-        $this->assertFalse((new ViewEncoder())->shouldEncode(new OkStatusResponse()));
-        $this->assertTrue((new ViewEncoder())->shouldEncode(new ViewResponse($this->template_engine, 'example.php')));
+        $this->assertFalse((new ViewEncoder())->shouldEncode(new OkStatusResult()));
+        $this->assertTrue((new ViewEncoder())->shouldEncode(new ViewResult($this->template_engine, 'example.php')));
     }
 
     public function testEncodeView()
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $view = new ViewResponse($this->template_engine, 'example.php', [
+        $view = new ViewResult($this->template_engine, 'example.php', [
             'first_name' => 'John Doe',
         ]);
 

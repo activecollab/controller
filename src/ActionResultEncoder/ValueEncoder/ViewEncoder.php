@@ -11,20 +11,20 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
-use ActiveCollab\Controller\Response\ViewResponseInterface;
+use ActiveCollab\Controller\ActionResult\ViewResultInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class ViewEncoder extends ValueEncoder
 {
     public function shouldEncode($value): bool
     {
-        return $value instanceof ViewResponseInterface;
+        return $value instanceof ViewResultInterface;
     }
 
     /**
      * @param  ResponseInterface            $response
      * @param  ActionResultEncoderInterface $encoder
-     * @param  ViewResponseInterface        $value
+     * @param  ViewResultInterface          $value
      * @return ResponseInterface
      */
     public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface

@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
-use ActiveCollab\Controller\Response\FileDownloadResponseInterface;
+use ActiveCollab\Controller\ActionResult\FileDownloadResultInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Stream;
 
@@ -19,13 +19,13 @@ class FileDownloadEncoder extends ValueEncoder
 {
     public function shouldEncode($value): bool
     {
-        return $value instanceof FileDownloadResponseInterface;
+        return $value instanceof FileDownloadResultInterface;
     }
 
     /**
-     * @param  ResponseInterface             $response
-     * @param  ActionResultEncoderInterface  $encoder
-     * @param  FileDownloadResponseInterface $value
+     * @param  ResponseInterface            $response
+     * @param  ActionResultEncoderInterface $encoder
+     * @param  FileDownloadResultInterface  $value
      * @return ResponseInterface
      */
     public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface

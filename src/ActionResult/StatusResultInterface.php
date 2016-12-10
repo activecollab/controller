@@ -8,9 +8,11 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\Response;
+namespace ActiveCollab\Controller\ActionResult;
 
-interface StatusResponseInterface extends ResponseInterface
+use ActiveCollab\Controller\ActionResult\ActionResultInterface;
+
+interface StatusResultInterface extends ActionResultInterface
 {
     public function getHttpCode(): int;
 

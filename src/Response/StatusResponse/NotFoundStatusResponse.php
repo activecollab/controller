@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Response\StatusResponse;
 
-use ActiveCollab\Controller\Response\StatusResponse;
+use ActiveCollab\Controller\ActionResult\StatusResult;
 
 /**
  * @package ActiveCollab\Controller\Response\StatusResponse
  */
-class NotFoundStatusResponse extends StatusResponse
+class NotFoundStatusResult extends StatusResult
 {
     /**
      * @param string $message

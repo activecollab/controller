@@ -12,8 +12,8 @@ namespace ActiveCollab\Controller\Test\Encoder;
 
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\FileDownloadEncoder;
-use ActiveCollab\Controller\Response\FileDownloadResponse;
-use ActiveCollab\Controller\Response\StatusResponse\OkStatusResponse;
+use ActiveCollab\Controller\ActionResult\FileDownloadResult;
+use ActiveCollab\Controller\Response\StatusResponse\OkStatusResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
@@ -22,15 +22,15 @@ class FileDownloadEncoderTest extends TestCase
     public function testShouldEncode()
     {
         $this->assertFalse((new FileDownloadEncoder())->shouldEncode([1, 2, 3]));
-        $this->assertFalse((new FileDownloadEncoder())->shouldEncode(new OkStatusResponse()));
-        $this->assertTrue((new FileDownloadEncoder())->shouldEncode(new FileDownloadResponse(__FILE__, 'text/php')));
+        $this->assertFalse((new FileDownloadEncoder())->shouldEncode(new OkStatusResult()));
+        $this->assertTrue((new FileDownloadEncoder())->shouldEncode(new FileDownloadResult(__FILE__, 'text/php')));
     }
 
     public function testForcedFileDownloadEncoder()
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $file_download = new FileDownloadResponse(__FILE__, 'text/php');
+        $file_download = new FileDownloadResult(__FILE__, 'text/php');
 
         $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder(), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);
@@ -68,7 +68,7 @@ class FileDownloadEncoderTest extends TestCase
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $file_download = new FileDownloadResponse(__FILE__, 'text/php', true);
+        $file_download = new FileDownloadResult(__FILE__, 'text/php', true);
 
         $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder(), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);

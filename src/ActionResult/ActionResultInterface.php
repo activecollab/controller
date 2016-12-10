@@ -8,8 +8,8 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\Response;
+namespace ActiveCollab\Controller\ActionResult;
 
-interface ResponseInterface
+interface ActionResultInterface
 {
 }

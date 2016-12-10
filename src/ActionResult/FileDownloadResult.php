@@ -8,12 +8,14 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\Response;
+namespace ActiveCollab\Controller\ActionResult;
 
+use ActiveCollab\Controller\ActionResult\ActionResultInterface;
+use ActiveCollab\Controller\ActionResult\FileDownloadResultInterface;
 use InvalidArgumentException;
 use RuntimeException;
 
-class FileDownloadResponse implements ResponseInterface, FileDownloadResponseInterface
+class FileDownloadResult implements ActionResultInterface, FileDownloadResultInterface
 {
     private $file_path;
 

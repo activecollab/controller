@@ -8,11 +8,12 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\Response;
+namespace ActiveCollab\Controller\ActionResult;
 
+use ActiveCollab\Controller\ActionResult\ViewResultInterface;
 use ActiveCollab\TemplateEngine\TemplateEngineInterface;
 
-class ViewResponse implements ViewResponseInterface
+class ViewResult implements ViewResultInterface
 {
     private $template_engine;
 

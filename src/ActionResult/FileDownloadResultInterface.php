@@ -6,9 +6,11 @@
  * (c) A51 doo <info@activecollab.com>. All rights reserved.
  */
 
-namespace ActiveCollab\Controller\Response;
+namespace ActiveCollab\Controller\ActionResult;
 
-interface FileDownloadResponseInterface extends ResponseInterface
+use ActiveCollab\Controller\ActionResult\ActionResultInterface;
+
+interface FileDownloadResultInterface extends ActionResultInterface
 {
     public function getFilePath(): string;
 
