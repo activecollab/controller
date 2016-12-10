@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
+use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ArrayEncoder;
-use ActiveCollab\Controller\Response\StatusResponse\OkStatusResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
@@ -21,7 +21,7 @@ class ArrayEncoderTest extends TestCase
     public function testShouldEncode()
     {
         $this->assertFalse((new ArrayEncoder())->shouldEncode(null));
-        $this->assertFalse((new ArrayEncoder())->shouldEncode(new OkStatusResult()));
+        $this->assertFalse((new ArrayEncoder())->shouldEncode(new Ok()));
         $this->assertTrue((new ArrayEncoder())->shouldEncode([1, 2, 3]));
     }
 

@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
+use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ErrorEncoder;
-use ActiveCollab\Controller\Response\StatusResponse\OkStatusResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 use LogicException;
 use ParseError;
@@ -24,7 +24,7 @@ class ErrorEncoderTest extends TestCase
     public function testShouldEncode()
     {
         $this->assertFalse((new ErrorEncoder())->shouldEncode([1, 2, 3]));
-        $this->assertFalse((new ErrorEncoder())->shouldEncode(new OkStatusResult()));
+        $this->assertFalse((new ErrorEncoder())->shouldEncode(new Ok()));
         $this->assertTrue((new ErrorEncoder())->shouldEncode(new LogicException('Error in the app logic.')));
         $this->assertTrue((new ErrorEncoder())->shouldEncode(new ParseError('Error in the code.')));
     }
