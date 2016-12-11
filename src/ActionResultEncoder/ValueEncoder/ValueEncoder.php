@@ -15,6 +15,10 @@ use Slim\Http\Stream;
 
 abstract class ValueEncoder implements ValueEncoderInterface
 {
+    public function __construct()
+    {
+    }
+
     /**
      * Create the message body.
      *
