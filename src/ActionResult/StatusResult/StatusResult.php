@@ -36,34 +36,13 @@ class StatusResult implements StatusResultInterface
         return $this->status_code;
     }
 
-    public function &setStatusCode(int $status_code): StatusResultInterface
-    {
-        $this->status_code = $status_code;
-
-        return $this;
-    }
-
     public function getMessage(): string
     {
         return $this->message;
     }
 
-    public function &setMessage(string $message): StatusResultInterface
-    {
-        $this->message = $message;
-
-        return $this;
-    }
-
     public function getPayload()
     {
         return $this->payload;
-    }
-
-    public function &setPayload($payload): StatusResultInterface
-    {
-        $this->payload = $payload;
-
-        return $this;
     }
 }
