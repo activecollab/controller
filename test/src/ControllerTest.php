@@ -10,6 +10,9 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test;
 
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResultInterface;
+use ActiveCollab\Controller\ControllerInterface;
 use ActiveCollab\Controller\Test\Base\TestCase;
 use ActiveCollab\Controller\Test\Fixtures\ErrorThrowingController;
 use ActiveCollab\Controller\Test\Fixtures\FixedActionNameResolver;
@@ -309,5 +312,77 @@ class ControllerTest extends TestCase
         $this->assertCount(1, $test_handler->getRecords());
         $this->assertSame('Failed due to an exception', $test_handler->getRecords()[0]['message']);
         $this->assertInstanceOf(LogicException::class, $test_handler->getRecords()[0]['context']['exception']);
+    }
+
+    public function testOk()
+    {
+        $result = $this->createTestController()->ok();
+
+        $this->assertInstanceOf(StatusResultInterface::class, $result);
+        $this->assertSame(200, $result->getStatusCode());
+    }
+
+    public function testCreated()
+    {
+        $payload = [1, 2, 3];
+
+        $result = $this->createTestController()->created($payload);
+
+        $this->assertInstanceOf(StatusResultInterface::class, $result);
+        $this->assertSame(201, $result->getStatusCode());
+        $this->assertSame($payload, $result->getPayload());
+    }
+
+    public function testBadRequest()
+    {
+        $result = $this->createTestController()->badRequest();
+
+        $this->assertInstanceOf(StatusResultInterface::class, $result);
+        $this->assertSame(400, $result->getStatusCode());
+    }
+
+    public function testForbidden()
+    {
+        $result = $this->createTestController()->forbidden();
+
+        $this->assertInstanceOf(StatusResultInterface::class, $result);
+        $this->assertSame(403, $result->getStatusCode());
+    }
+
+    public function testNotFound()
+    {
+        $result = $this->createTestController()->notFound();
+
+        $this->assertInstanceOf(StatusResultInterface::class, $result);
+        $this->assertSame(404, $result->getStatusCode());
+    }
+
+    /**
+     * @param bool $is_moved_permanently
+     * @dataProvider getIsMovedPermanentlyValues
+     */
+    public function testMoved(bool $is_moved_permanently)
+    {
+        $result = $this->createTestController()->moved('https://activecollab.com', $is_moved_permanently);
+
+        $this->assertInstanceOf(MovedResultInterface::class, $result);
+        $this->assertSame('https://activecollab.com', $result->getUrl());
+        $this->assertSame($is_moved_permanently, $result->isMovedPermanently());
+    }
+
+    public function getIsMovedPermanentlyValues()
+    {
+        return [[false], [true]];
+    }
+
+    /**
+     * @return TestController|ControllerInterface
+     */
+    private function createTestController()
+    {
+        $test_handler = new TestHandler();
+        $logger = new Logger('test', [$test_handler]);
+
+        return new TestController(new FixedActionNameResolver('not an action name'), 'action_result', $logger);
     }
 }

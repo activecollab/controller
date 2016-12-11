@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\ActionResult;
+namespace ActiveCollab\Controller\ActionResult\StatusResult;
 
 use LogicException;
 
@@ -63,6 +63,7 @@ class StatusResult implements StatusResultInterface
     public function &setPayload($payload): StatusResultInterface
     {
         $this->payload = $payload;
+
         return $this;
     }
 }

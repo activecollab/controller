@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
-use ActiveCollab\Controller\ActionResult\MovedResult;
-use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResult;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\MovedResourceEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
@@ -22,7 +22,7 @@ class MovedResourceEncoderTest extends TestCase
     public function testShouldEncode()
     {
         $this->assertFalse((new MovedResourceEncoder())->shouldEncode([1, 2, 3]));
-        $this->assertFalse((new MovedResourceEncoder())->shouldEncode(new Ok()));
+        $this->assertFalse((new MovedResourceEncoder())->shouldEncode(new StatusResult(200)));
         $this->assertTrue((new MovedResourceEncoder())->shouldEncode(new MovedResult('https://activecollab.com')));
     }
 

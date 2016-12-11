@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultGetter;
 
-use ActiveCollab\Controller\ActionResult\MovedResultInterface;
-use ActiveCollab\Controller\ActionResult\StatusResultInterface;
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResultInterface;
 
 interface ActionResultGetterInterface
 {
@@ -25,5 +25,5 @@ interface ActionResultGetterInterface
 
     public function notFound(): StatusResultInterface;
 
-    public function moved(string $url, bool $is_moved_permanently): MovedResultInterface;
+    public function moved(string $url, bool $is_moved_permanently = false): MovedResultInterface;
 }

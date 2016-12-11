@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
-use ActiveCollab\Controller\ActionResult\FileDownloadResult;
-use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
+use ActiveCollab\Controller\ActionResult\FileDownloadResult\FileDownloadResult;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\FileDownloadEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
@@ -22,7 +22,7 @@ class FileDownloadEncoderTest extends TestCase
     public function testShouldEncode()
     {
         $this->assertFalse((new FileDownloadEncoder())->shouldEncode([1, 2, 3]));
-        $this->assertFalse((new FileDownloadEncoder())->shouldEncode(new Ok()));
+        $this->assertFalse((new FileDownloadEncoder())->shouldEncode(new StatusResult(200)));
         $this->assertTrue((new FileDownloadEncoder())->shouldEncode(new FileDownloadResult(__FILE__, 'text/php')));
     }
 

@@ -13,14 +13,10 @@ namespace ActiveCollab\Controller;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as ContainerAccessInterfaceImplementation;
 use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
-use ActiveCollab\Controller\ActionResult\MovedResult;
-use ActiveCollab\Controller\ActionResult\MovedResultInterface;
-use ActiveCollab\Controller\ActionResult\StatusResult\BadRequest;
-use ActiveCollab\Controller\ActionResult\StatusResult\Created;
-use ActiveCollab\Controller\ActionResult\StatusResult\Forbidden;
-use ActiveCollab\Controller\ActionResult\StatusResult\NotFound;
-use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
-use ActiveCollab\Controller\ActionResult\StatusResultInterface;
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResult;
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResultInterface;
 use ActiveCollab\Controller\ActionResultGetter\ActionResultGetterInterface;
 use ActiveCollab\Controller\Exception\ActionForMethodNotFound;
 use ActiveCollab\Controller\Exception\ActionNotFound;
@@ -276,31 +272,31 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     public function ok(): StatusResultInterface
     {
-        return new Ok();
+        return new StatusResult(200);
     }
 
     public function created($payload = null): StatusResultInterface
     {
-        return new Created($payload);
+        return new StatusResult(201, '', $payload);
     }
 
     public function badRequest(): StatusResultInterface
     {
-        return new BadRequest();
+        return new StatusResult(400);
     }
 
     public function forbidden(): StatusResultInterface
     {
-        return new Forbidden();
+        return new StatusResult(403);
     }
 
     public function notFound(): StatusResultInterface
     {
-        return new NotFound();
+        return new StatusResult(404);
     }
 
-    public function moved(string $url, bool $is_moved_permanently): MovedResultInterface
+    public function moved(string $url, bool $is_moved_permanently = false): MovedResultInterface
     {
-        return new MovedResult($url);
+        return new MovedResult($url, $is_moved_permanently);
     }
 }

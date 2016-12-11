@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test;
 
-use ActiveCollab\Controller\ActionResult\FileDownloadResult;
+use ActiveCollab\Controller\ActionResult\FileDownloadResult\FileDownloadResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 
 class FileDownloadResultTest extends TestCase

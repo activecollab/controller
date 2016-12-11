@@ -8,7 +8,9 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\ActionResult;
+namespace ActiveCollab\Controller\ActionResult\ViewResult;
+
+use ActiveCollab\Controller\ActionResult\ActionResultInterface;
 
 interface ViewResultInterface extends ActionResultInterface
 {

@@ -6,7 +6,7 @@
  * (c) A51 doo <info@activecollab.com>. All rights reserved.
  */
 
-namespace ActiveCollab\Controller\ActionResult;
+namespace ActiveCollab\Controller\ActionResult\MovedResult;
 
 use InvalidArgumentException;
 

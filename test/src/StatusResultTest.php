@@ -10,8 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test;
 
-use ActiveCollab\Controller\ActionResult\StatusResult;
-use ActiveCollab\Controller\ActionResult\StatusResult\BadRequest;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 
 class StatusResultTest extends TestCase
@@ -22,6 +21,6 @@ class StatusResultTest extends TestCase
      */
     public function testStatusResponseIsNotAcceptablePayload()
     {
-        new StatusResult(200, 'Ok', new BadRequest());
+        new StatusResult(200, 'Ok', new StatusResult(403));
     }
 }

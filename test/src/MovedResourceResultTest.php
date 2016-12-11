@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test;
 
-use ActiveCollab\Controller\ActionResult\MovedResult;
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 
 class MovedResourceResultTest extends TestCase

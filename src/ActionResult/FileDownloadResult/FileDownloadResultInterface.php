@@ -6,7 +6,9 @@
  * (c) A51 doo <info@activecollab.com>. All rights reserved.
  */
 
-namespace ActiveCollab\Controller\ActionResult;
+namespace ActiveCollab\Controller\ActionResult\FileDownloadResult;
+
+use ActiveCollab\Controller\ActionResult\ActionResultInterface;
 
 interface FileDownloadResultInterface extends ActionResultInterface
 {

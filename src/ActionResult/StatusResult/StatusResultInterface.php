@@ -8,7 +8,9 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\ActionResult;
+namespace ActiveCollab\Controller\ActionResult\StatusResult;
+
+use ActiveCollab\Controller\ActionResult\ActionResultInterface;
 
 interface StatusResultInterface extends ActionResultInterface
 {

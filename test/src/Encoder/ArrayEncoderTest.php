@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
-use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ArrayEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
@@ -21,7 +21,7 @@ class ArrayEncoderTest extends TestCase
     public function testShouldEncode()
     {
         $this->assertFalse((new ArrayEncoder())->shouldEncode(null));
-        $this->assertFalse((new ArrayEncoder())->shouldEncode(new Ok()));
+        $this->assertFalse((new ArrayEncoder())->shouldEncode(new StatusResult(200)));
         $this->assertTrue((new ArrayEncoder())->shouldEncode([1, 2, 3]));
     }
 

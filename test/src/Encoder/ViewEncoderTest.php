@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
-use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
-use ActiveCollab\Controller\ActionResult\ViewResult;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
+use ActiveCollab\Controller\ActionResult\ViewResult\ViewResult;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ViewEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
@@ -37,7 +37,7 @@ class ViewEncoderTest extends TestCase
     public function testShouldEncode()
     {
         $this->assertFalse((new ViewEncoder())->shouldEncode([1, 2, 3]));
-        $this->assertFalse((new ViewEncoder())->shouldEncode(new Ok()));
+        $this->assertFalse((new ViewEncoder())->shouldEncode(new StatusResult(200)));
         $this->assertTrue((new ViewEncoder())->shouldEncode(new ViewResult($this->template_engine, 'example.php')));
     }
 

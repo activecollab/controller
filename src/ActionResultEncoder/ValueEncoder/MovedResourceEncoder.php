@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
-use ActiveCollab\Controller\ActionResult\MovedResultInterface;
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
 

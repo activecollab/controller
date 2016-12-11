@@ -8,8 +8,9 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\ActionResult;
+namespace ActiveCollab\Controller\ActionResult\FileDownloadResult;
 
+use ActiveCollab\Controller\ActionResult\ActionResultInterface;
 use InvalidArgumentException;
 use RuntimeException;
 
