@@ -22,6 +22,8 @@ class ErrorEncoder extends ValueEncoder
 
     public function __construct(bool $display_error_details = false)
     {
+        parent::__construct();
+
         $this->display_error_details = $display_error_details;
     }
 
