@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
-use ActiveCollab\Controller\ActionResult\MovedResourceInterface;
+use ActiveCollab\Controller\ActionResult\MovedResultInterface;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -20,13 +20,13 @@ class MovedResourceEncoder extends ValueEncoder
 
     public function shouldEncode($value): bool
     {
-        return $value instanceof MovedResourceInterface;
+        return $value instanceof MovedResultInterface;
     }
 
     /**
      * @param  ResponseInterface            $response
      * @param  ActionResultEncoderInterface $encoder
-     * @param  MovedResourceInterface       $value
+     * @param  MovedResultInterface         $value
      * @return ResponseInterface
      */
     public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface

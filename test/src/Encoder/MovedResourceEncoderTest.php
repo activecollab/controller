@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Encoder;
 
-use ActiveCollab\Controller\ActionResult\MovedResource;
+use ActiveCollab\Controller\ActionResult\MovedResult;
 use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\MovedResourceEncoder;
@@ -23,19 +23,19 @@ class MovedResourceEncoderTest extends TestCase
     {
         $this->assertFalse((new MovedResourceEncoder())->shouldEncode([1, 2, 3]));
         $this->assertFalse((new MovedResourceEncoder())->shouldEncode(new Ok()));
-        $this->assertTrue((new MovedResourceEncoder())->shouldEncode(new MovedResource('https://activecollab.com')));
+        $this->assertTrue((new MovedResourceEncoder())->shouldEncode(new MovedResult('https://activecollab.com')));
     }
 
     public function testMovedTemporalyByDefault()
     {
-        $this->assertFalse((new MovedResource('https://activecollab.com'))->isMovedPermanently());
+        $this->assertFalse((new MovedResult('https://activecollab.com'))->isMovedPermanently());
     }
 
     public function testMovedTemporaly()
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder(), new MovedResource('https://activecollab.com'));
+        $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder(), new MovedResult('https://activecollab.com'));
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 
@@ -48,7 +48,7 @@ class MovedResourceEncoderTest extends TestCase
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder(), new MovedResource('https://activecollab.com', true));
+        $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder(), new MovedResult('https://activecollab.com', true));
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 

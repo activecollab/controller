@@ -14,26 +14,33 @@ use LogicException;
 
 class StatusResult implements StatusResultInterface
 {
-    private $http_code;
+    private $status_code;
 
     private $message;
 
     private $payload;
 
-    public function __construct($http_code, $message = '', $payload = null)
+    public function __construct(int $status_code, string $message = '', $payload = null)
     {
         if ($payload instanceof StatusResultInterface) {
             throw new LogicException('Status response is not an acceptible payload.');
         }
 
-        $this->http_code = $http_code;
+        $this->status_code = $status_code;
         $this->message = $message;
         $this->payload = $payload;
     }
 
-    public function getHttpCode(): int
+    public function getStatusCode(): int
     {
-        return $this->http_code;
+        return $this->status_code;
+    }
+
+    public function &setStatusCode(int $status_code): StatusResultInterface
+    {
+        $this->status_code = $status_code;
+
+        return $this;
     }
 
     public function getMessage(): string
@@ -41,8 +48,21 @@ class StatusResult implements StatusResultInterface
         return $this->message;
     }
 
+    public function &setMessage(string $message): StatusResultInterface
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
     public function getPayload()
     {
         return $this->payload;
+    }
+
+    public function &setPayload($payload): StatusResultInterface
+    {
+        $this->payload = $payload;
+        return $this;
     }
 }

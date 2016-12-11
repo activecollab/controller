@@ -13,6 +13,15 @@ namespace ActiveCollab\Controller;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as ContainerAccessInterfaceImplementation;
 use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
+use ActiveCollab\Controller\ActionResult\MovedResult;
+use ActiveCollab\Controller\ActionResult\MovedResultInterface;
+use ActiveCollab\Controller\ActionResult\StatusResult\BadRequest;
+use ActiveCollab\Controller\ActionResult\StatusResult\Created;
+use ActiveCollab\Controller\ActionResult\StatusResult\Forbidden;
+use ActiveCollab\Controller\ActionResult\StatusResult\NotFound;
+use ActiveCollab\Controller\ActionResult\StatusResult\Ok;
+use ActiveCollab\Controller\ActionResult\StatusResultInterface;
+use ActiveCollab\Controller\ActionResultGetter\ActionResultGetterInterface;
 use ActiveCollab\Controller\Exception\ActionForMethodNotFound;
 use ActiveCollab\Controller\Exception\ActionNotFound;
 use ActiveCollab\Controller\RequestParamGetter\RequestParamGetterInterface;
@@ -27,7 +36,7 @@ use Throwable;
 /**
  * @package ActiveCollab\Controller
  */
-abstract class Controller implements ContainerAccessInterface, ControllerInterface, RequestParamGetterInterface
+abstract class Controller implements ContainerAccessInterface, ControllerInterface, RequestParamGetterInterface, ActionResultGetterInterface
 {
     use ContainerAccessInterfaceImplementation;
 
@@ -263,5 +272,35 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
     public function getServerParam(ServerRequestInterface $request, $param_name, $default = null)
     {
         return array_key_exists($param_name, $request->getServerParams()) ? $request->getServerParams()[$param_name] : $default;
+    }
+
+    public function ok(): StatusResultInterface
+    {
+        return new Ok();
+    }
+
+    public function created($payload = null): StatusResultInterface
+    {
+        return new Created($payload);
+    }
+
+    public function badRequest(): StatusResultInterface
+    {
+        return new BadRequest();
+    }
+
+    public function forbidden(): StatusResultInterface
+    {
+        return new Forbidden();
+    }
+
+    public function notFound(): StatusResultInterface
+    {
+        return new NotFound();
+    }
+
+    public function moved(string $url, bool $is_moved_permanently): MovedResultInterface
+    {
+        return new MovedResult($url);
     }
 }

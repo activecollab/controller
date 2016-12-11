@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test;
 
-use ActiveCollab\Controller\ActionResult\MovedResource;
+use ActiveCollab\Controller\ActionResult\MovedResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
 
 class MovedResourceResultTest extends TestCase
@@ -21,6 +21,6 @@ class MovedResourceResultTest extends TestCase
      */
     public function testExceptionOnInvalidUrl()
     {
-        new MovedResource('not an url');
+        new MovedResult('not an url');
     }
 }

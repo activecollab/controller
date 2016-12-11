@@ -8,7 +8,7 @@
 
 namespace ActiveCollab\Controller\ActionResult;
 
-interface MovedResourceInterface
+interface MovedResultInterface
 {
     public function getUrl(): string;
 

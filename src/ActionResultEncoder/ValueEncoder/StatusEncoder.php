@@ -29,7 +29,7 @@ class StatusEncoder extends ValueEncoder
      */
     public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface
     {
-        $response = $response->withStatus($value->getHttpCode(), $value->getMessage());
+        $response = $response->withStatus($value->getStatusCode(), $value->getMessage());
 
         if ($value->getPayload()) {
             $response = $encoder->encode($response, $value->getPayload());

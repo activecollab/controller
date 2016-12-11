@@ -10,7 +10,7 @@ namespace ActiveCollab\Controller\ActionResult;
 
 use InvalidArgumentException;
 
-class MovedResource implements MovedResourceInterface
+class MovedResult implements MovedResultInterface
 {
     private $url;
 
