@@ -75,12 +75,8 @@ class ActionResultEncoder implements ActionResultEncoderInterface
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
-        if (!array_key_exists($this->request_attribute_name, $request->getAttributes())) {
-            throw new RuntimeException("Request attribute '{$this->request_attribute_name}' not found.");
-        }
-
         if (!$this->getEncodeOnExit()) {
-            $response = $this->encode($response, $request->getAttribute($this->request_attribute_name));
+            $response = $this->encodeToResponse($request, $response);
         }
 
         if ($next) {
@@ -88,10 +84,19 @@ class ActionResultEncoder implements ActionResultEncoderInterface
         }
 
         if ($this->getEncodeOnExit()) {
-            $response = $this->encode($response, $request->getAttribute($this->request_attribute_name));
+            $response = $this->encodeToResponse($request, $response);
         }
 
         return $response;
+    }
+
+    private function encodeToResponse(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        if (!array_key_exists($this->request_attribute_name, $request->getAttributes())) {
+            throw new RuntimeException("Request attribute '{$this->request_attribute_name}' not found.");
+        }
+
+        return $this->encode($response, $request->getAttribute($this->request_attribute_name));
     }
 
     public function encode(ResponseInterface $response, $value): ResponseInterface
