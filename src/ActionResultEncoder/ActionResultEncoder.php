@@ -76,7 +76,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         if (!$this->getEncodeOnExit()) {
-            $response = $this->encodeToResponse($request, $response);
+            $response = $this->encodeToResponse($request, $response, $this->getRequestAttributeName());
         }
 
         if ($next) {
@@ -84,19 +84,10 @@ class ActionResultEncoder implements ActionResultEncoderInterface
         }
 
         if ($this->getEncodeOnExit()) {
-            $response = $this->encodeToResponse($request, $response);
+            $response = $this->encodeToResponse($request, $response, $this->getRequestAttributeName());
         }
 
         return $response;
-    }
-
-    private function encodeToResponse(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
-        if (!array_key_exists($this->request_attribute_name, $request->getAttributes())) {
-            throw new RuntimeException("Request attribute '{$this->request_attribute_name}' not found.");
-        }
-
-        return $this->encode($response, $request->getAttribute($this->request_attribute_name));
     }
 
     public function encode(ResponseInterface $response, $value): ResponseInterface
@@ -108,6 +99,15 @@ class ActionResultEncoder implements ActionResultEncoderInterface
         }
 
         throw new RuntimeException("No matching encoder for value of {$this->getValueType($value)} type found.");
+    }
+
+    private function encodeToResponse(ServerRequestInterface $request, ResponseInterface $response, string $request_attribute_name): ResponseInterface
+    {
+        if (!array_key_exists($request_attribute_name, $request->getAttributes())) {
+            throw new RuntimeException("Request attribute '{$request_attribute_name}' not found.");
+        }
+
+        return $this->encode($response, $request->getAttribute($request_attribute_name));
     }
 
     private function getValueType($value): string
