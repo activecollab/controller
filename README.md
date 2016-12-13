@@ -23,7 +23,7 @@ All of these methods accept three parameters:
 
 ## Configuration
 
-Controllers can override protected `configure()` method to do additional setup after controller construction. This method is separated from constructor, so developer does not need to inherti and manage complicated controller constructor.
+Controllers can override protected `configure()` method to do additional setup after controller construction. This method is separated from constructor, so developer does not need to inherit and manage complicated controller constructor.
  
 ```php
 <?php
