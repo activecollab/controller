@@ -16,9 +16,13 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface ActionResultEncoderInterface
 {
-    public function getActionResultKey(): string;
+    public function getActionResultkey(): string;
 
-    public function &setActionResultKey(string $action_result_key): ActionResultEncoderInterface;
+    public function &setActionResultkey(string $action_result_key): ActionResultEncoderInterface;
+
+    public function getEncodeOnExit(): bool;
+
+    public function &setEncodeOnExit(bool $value = true): ActionResultEncoderInterface;
 
     public function getValueEncoders(): array;
 
