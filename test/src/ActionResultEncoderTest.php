@@ -29,17 +29,17 @@ class ActionResultEncoderTest extends TestCase
 
     public function testDefaultActionResultAttribute()
     {
-        $this->assertSame('action_result', (new ActionResultEncoder())->getActionResultkey());
+        $this->assertSame('action_result', (new ActionResultEncoder())->getActionResultKey());
     }
 
     public function testDefaultActionResultAttributeNameCantBeEmpty()
     {
-        (new ActionResultEncoder())->setActionResultkey('');
+        (new ActionResultEncoder())->setActionResultKey('');
     }
 
     public function testActionResultAttributeCanBeChanged()
     {
-        $this->assertSame('change_attribute_name', (new ActionResultEncoder())->setActionResultkey('change_attribute_name')->getActionResultkey());
+        $this->assertSame('change_attribute_name', (new ActionResultEncoder())->setActionResultKey('change_attribute_name')->getActionResultKey());
     }
 
     /**
