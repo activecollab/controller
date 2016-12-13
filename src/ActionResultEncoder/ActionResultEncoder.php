@@ -20,6 +20,8 @@ class ActionResultEncoder implements ActionResultEncoderInterface
 {
     private $request_attribute_name;
 
+    private $encode_on_exit = false;
+
     /**
      * @var ValueEncoderInterface[]
      */
@@ -47,6 +49,18 @@ class ActionResultEncoder implements ActionResultEncoderInterface
         return $this;
     }
 
+    public function getEncodeOnExit(): bool
+    {
+        return $this->encode_on_exit;
+    }
+
+    public function &setEncodeOnExit(bool $value = true): ActionResultEncoderInterface
+    {
+        $this->encode_on_exit = $value;
+
+        return $this;
+    }
+
     public function getValueEncoders(): array
     {
         return $this->value_encoders;
@@ -65,10 +79,16 @@ class ActionResultEncoder implements ActionResultEncoderInterface
             throw new RuntimeException("Request attribute '{$this->request_attribute_name}' not found.");
         }
 
-        $response = $this->encode($response, $request->getAttribute($this->request_attribute_name));
+        if (!$this->getEncodeOnExit()) {
+            $response = $this->encode($response, $request->getAttribute($this->request_attribute_name));
+        }
 
         if ($next) {
             $response = $next($request, $response);
+        }
+
+        if ($this->getEncodeOnExit()) {
+            $response = $this->encode($response, $request->getAttribute($this->request_attribute_name));
         }
 
         return $response;

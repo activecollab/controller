@@ -20,6 +20,10 @@ interface ActionResultEncoderInterface
 
     public function &setRequestAttributeName(string $request_attribute_name): ActionResultEncoderInterface;
 
+    public function getEncodeOnExit(): bool;
+
+    public function &setEncodeOnExit(bool $value = true): ActionResultEncoderInterface;
+
     public function getValueEncoders(): array;
 
     public function &addValueEncoder(ValueEncoderInterface $value_encoder): ActionResultEncoderInterface;
