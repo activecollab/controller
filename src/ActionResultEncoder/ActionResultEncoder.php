@@ -18,7 +18,7 @@ use RuntimeException;
 
 class ActionResultEncoder implements ActionResultEncoderInterface
 {
-    private $request_attribute_name;
+    private $action_result_key;
 
     private $encode_on_exit = false;
 
@@ -27,24 +27,24 @@ class ActionResultEncoder implements ActionResultEncoderInterface
      */
     private $value_encoders;
 
-    public function __construct(string $request_attribute_name = 'action_result', ValueEncoderInterface ...$value_encoders)
+    public function __construct(string $action_result_key = 'action_result', ValueEncoderInterface ...$value_encoders)
     {
-        if (empty($request_attribute_name)) {
+        if (empty($action_result_key)) {
             throw new InvalidArgumentException('Request attribute name is required.');
         }
 
-        $this->request_attribute_name = $request_attribute_name;
+        $this->action_result_key = $action_result_key;
         $this->value_encoders = $value_encoders;
     }
 
-    public function getRequestAttributeName(): string
+    public function getActionResultkey(): string
     {
-        return $this->request_attribute_name;
+        return $this->action_result_key;
     }
 
-    public function &setRequestAttributeName(string $request_attribute_name): ActionResultEncoderInterface
+    public function &setActionResultkey(string $action_result_key): ActionResultEncoderInterface
     {
-        $this->request_attribute_name = $request_attribute_name;
+        $this->action_result_key = $action_result_key;
 
         return $this;
     }
@@ -76,7 +76,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         if (!$this->getEncodeOnExit()) {
-            $response = $this->encodeToResponse($request, $response, $this->getRequestAttributeName());
+            $response = $this->encodeToResponse($request, $response, $this->getActionResultkey());
         }
 
         if ($next) {
@@ -84,7 +84,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface
         }
 
         if ($this->getEncodeOnExit()) {
-            $response = $this->encodeToResponse($request, $response, $this->getRequestAttributeName());
+            $response = $this->encodeToResponse($request, $response, $this->getActionResultkey());
         }
 
         return $response;

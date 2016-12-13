@@ -16,9 +16,9 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface ActionResultEncoderInterface
 {
-    public function getRequestAttributeName(): string;
+    public function getActionResultkey(): string;
 
-    public function &setRequestAttributeName(string $request_attribute_name): ActionResultEncoderInterface;
+    public function &setActionResultkey(string $action_result_key): ActionResultEncoderInterface;
 
     public function getEncodeOnExit(): bool;
 
