@@ -17,6 +17,13 @@ class TestController extends BaseController
 {
     private $before_should_return = null;
 
+    public $is_configured = false;
+
+    protected function configure(): void
+    {
+        $this->is_configured = true;
+    }
+
     public function getBeforeShouldReturn()
     {
         return $this->before_should_return;

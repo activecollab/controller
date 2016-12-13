@@ -56,6 +56,12 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         $this->setActionNameResolver($action_name_resolver);
         $this->setActionResultAttributeName($action_result_attribute_name);
         $this->setLogger($logger);
+
+        $this->configure();
+    }
+
+    protected function configure(): void
+    {
     }
 
     public function __before(ServerRequestInterface $request)

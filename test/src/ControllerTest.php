@@ -31,6 +31,17 @@ use RuntimeException;
  */
 class ControllerTest extends TestCase
 {
+    public function testControllerIsConfigured()
+    {
+        $default_properties = (new \ReflectionClass(TestController::class))->getDefaultProperties();
+        $this->assertArrayHasKey('is_configured', $default_properties);
+
+        $this->assertFalse($default_properties['is_configured']);
+
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $this->assertTrue($controller->is_configured);
+    }
+
     public function testControllerName()
     {
         $test_controller = new TestController(new FixedActionNameResolver('throwPhpError'));

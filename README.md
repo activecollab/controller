@@ -21,6 +21,28 @@ All of these methods accept three parameters:
 2. `$param_name` (string)
 3. `$default` (mixed, `NULL` by default)
 
+## Configuration
+
+Controllers can override protected `configure()` method to do additional setup after controller construction. This method is separated from constructor, so developer does not need to inherti and manage complicated controller constructor.
+ 
+```php
+<?php
+
+namespace App;
+
+use ActiveCollab\Controller\Controller;
+
+class TestController extends Controller
+{
+    public $is_configured = false;
+
+    protected function configure(): void
+    {
+        $this->is_configured = true;
+    }
+}
+```
+
 ## Exception Handling
 
 When action fails due to an exception, system will return 500 HTTP error, with a message that does not expose any of the system details. 
