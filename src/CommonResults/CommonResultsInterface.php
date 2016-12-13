@@ -8,12 +8,12 @@
 
 declare(strict_types=1);
 
-namespace ActiveCollab\Controller\ActionResultGetter;
+namespace ActiveCollab\Controller\CommonResults;
 
 use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
 use ActiveCollab\Controller\ActionResult\StatusResult\StatusResultInterface;
 
-interface ActionResultGetterInterface
+interface CommonResultsInterface
 {
     public function ok(): StatusResultInterface;
 

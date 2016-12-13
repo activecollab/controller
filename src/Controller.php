@@ -17,7 +17,7 @@ use ActiveCollab\Controller\ActionResult\MovedResult\MovedResult;
 use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
 use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\ActionResult\StatusResult\StatusResultInterface;
-use ActiveCollab\Controller\ActionResultGetter\ActionResultGetterInterface;
+use ActiveCollab\Controller\CommonResults\CommonResultsInterface;
 use ActiveCollab\Controller\Exception\ActionForMethodNotFound;
 use ActiveCollab\Controller\Exception\ActionNotFound;
 use ActiveCollab\Controller\RequestParamGetter\RequestParamGetterInterface;
@@ -32,7 +32,7 @@ use Throwable;
 /**
  * @package ActiveCollab\Controller
  */
-abstract class Controller implements ContainerAccessInterface, ControllerInterface, RequestParamGetterInterface, ActionResultGetterInterface
+abstract class Controller implements ContainerAccessInterface, ControllerInterface, RequestParamGetterInterface, CommonResultsInterface
 {
     use ContainerAccessInterfaceImplementation;
 
