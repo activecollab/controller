@@ -240,7 +240,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $exception_message;
     }
 
-    public function getParsedBodyParam(ServerRequestInterface $request, $param_name, $default = null)
+    public function getParsedBodyParam(ServerRequestInterface $request, string $param_name, $default = null)
     {
         $parsed_body = $request->getParsedBody();
 
@@ -255,7 +255,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $default;
     }
 
-    public function getCookieParam(ServerRequestInterface $request, $param_name, $default = null)
+    public function getCookieParam(ServerRequestInterface $request, string $param_name, $default = null)
     {
         return array_key_exists($param_name, $request->getCookieParams()) ? $request->getCookieParams()[$param_name] : $default;
     }
@@ -265,7 +265,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return array_key_exists($param_name, $request->getQueryParams()) ? $request->getQueryParams()[$param_name] : $default;
     }
 
-    public function getServerParam(ServerRequestInterface $request, $param_name, $default = null)
+    public function getServerParam(ServerRequestInterface $request, string $param_name, $default = null)
     {
         return array_key_exists($param_name, $request->getServerParams()) ? $request->getServerParams()[$param_name] : $default;
     }

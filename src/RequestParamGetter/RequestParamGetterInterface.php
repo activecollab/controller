@@ -25,7 +25,7 @@ interface RequestParamGetterInterface
      * @param  mixed|null             $default
      * @return mixed|null
      */
-    public function getParsedBodyParam(ServerRequestInterface $request, $param_name, $default = null);
+    public function getParsedBodyParam(ServerRequestInterface $request, string $param_name, $default = null);
 
     /**
      * @param  ServerRequestInterface $request
@@ -33,7 +33,7 @@ interface RequestParamGetterInterface
      * @param  mixed|null             $default
      * @return mixed
      */
-    public function getCookieParam(ServerRequestInterface $request, $param_name, $default = null);
+    public function getCookieParam(ServerRequestInterface $request, string $param_name, $default = null);
 
     /**
      * @param  ServerRequestInterface $request
@@ -49,5 +49,5 @@ interface RequestParamGetterInterface
      * @param  mixed|null             $default
      * @return mixed
      */
-    public function getServerParam(ServerRequestInterface $request, $param_name, $default = null);
+    public function getServerParam(ServerRequestInterface $request, string $param_name, $default = null);
 }
