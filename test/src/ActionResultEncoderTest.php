@@ -91,4 +91,27 @@ class ActionResultEncoderTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame('Header Found!', $response->getHeaderLine('X-Next-Middleware'));
     }
+
+    public function testEncoderCanRunOnExit()
+    {
+        $encoder = (new ActionResultEncoder('action_result', new ArrayEncoder()))
+            ->setEncodeOnExit();
+
+        $this->assertTrue($encoder->getEncodeOnExit());
+
+        /** @var ResponseInterface $response */
+        $response = call_user_func($encoder, $this->createRequest()->withAttribute('action_result', [1, 2, 3]), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response, callable $next = null) {
+            $this->assertEmpty((string) $response->getBody());
+
+            if ($next) {
+                $response = $next($request, $response);
+            }
+
+            return $response;
+        });
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+
+        $response_body = json_decode((string) $response->getBody(), true);
+        $this->assertSame([1, 2, 3], $response_body);
+    }
 }
