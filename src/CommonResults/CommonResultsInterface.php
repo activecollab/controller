@@ -25,5 +25,7 @@ interface CommonResultsInterface
 
     public function notFound(): StatusResultInterface;
 
+    public function conflict(): StatusResultInterface;
+
     public function moved(string $url, bool $is_moved_permanently = false): MovedResultInterface;
 }

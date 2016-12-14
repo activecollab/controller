@@ -301,6 +301,11 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return new StatusResult(404);
     }
 
+    public function conflict(): StatusResultInterface
+    {
+        return new StatusResult(409);
+    }
+
     public function moved(string $url, bool $is_moved_permanently = false): MovedResultInterface
     {
         return new MovedResult($url, $is_moved_permanently);

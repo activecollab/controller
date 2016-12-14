@@ -11,12 +11,29 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\Test;
 
 use ActiveCollab\Controller\Test\Base\TestCase;
+use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
 use ActiveCollab\Controller\Test\Fixtures\FixedActionNameResolver;
 use ActiveCollab\Controller\Test\Fixtures\TestController;
+use Pimple\Container;
 use stdClass;
 
 class RequestParamGetterTest extends TestCase
 {
+    private $container;
+
+    /**
+     * @var ActionResultInContainer
+     */
+    private $action_result_container;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->container = new Container();
+        $this->action_result_container = new ActionResultInContainer($this->container);
+    }
+
     public function testGetQueryParam()
     {
         $request = $this->createRequest('GET', '/', [
@@ -24,7 +41,7 @@ class RequestParamGetterTest extends TestCase
             'extended' => true,
         ]);
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertSame('for this', $controller->getQueryParam($request, 'search'));
         $this->assertSame('1', $controller->getQueryParam($request, 'extended'));
@@ -37,7 +54,7 @@ class RequestParamGetterTest extends TestCase
             'extended' => true,
         ]);
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertNull($controller->getQueryParam($request, 'unknown'));
         $this->assertSame(123, $controller->getQueryParam($request, 'unknown', 123));
@@ -50,7 +67,7 @@ class RequestParamGetterTest extends TestCase
             'extended' => true,
         ]);
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertSame('for this', $controller->getParsedBodyParam($request, 'search'));
         $this->assertSame(true, $controller->getParsedBodyParam($request, 'extended'));
@@ -60,7 +77,7 @@ class RequestParamGetterTest extends TestCase
     {
         $request = $this->createRequest();
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertNull($controller->getParsedBodyParam($request, 'unknown'));
         $this->assertSame(123, $controller->getParsedBodyParam($request, 'unknown', 123));
@@ -74,7 +91,7 @@ class RequestParamGetterTest extends TestCase
 
         $request = $this->createRequest()->withParsedBody($object);
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertSame('something', $controller->getParsedBodyParam($request, 'property1'));
         $this->assertSame(123, $controller->getParsedBodyParam($request, 'property2'));
@@ -87,7 +104,7 @@ class RequestParamGetterTest extends TestCase
             'extended' => true,
         ]);
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertSame('for this', $controller->getCookieParam($request, 'search'));
         $this->assertSame(true, $controller->getCookieParam($request, 'extended'));
@@ -97,7 +114,7 @@ class RequestParamGetterTest extends TestCase
     {
         $request = $this->createRequest();
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertNull($controller->getCookieParam($request, 'unknown'));
         $this->assertSame(123, $controller->getCookieParam($request, 'unknown', 123));
@@ -107,7 +124,7 @@ class RequestParamGetterTest extends TestCase
     {
         $request = $this->createRequest();
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertSame('GET', $controller->getServerParam($request, 'REQUEST_METHOD'));
         $this->assertSame('/', $controller->getServerParam($request, 'REQUEST_URI'));
@@ -117,7 +134,7 @@ class RequestParamGetterTest extends TestCase
     {
         $request = $this->createRequest();
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         $this->assertNull($controller->getServerParam($request, 'unknown'));
         $this->assertSame(123, $controller->getServerParam($request, 'unknown', 123));

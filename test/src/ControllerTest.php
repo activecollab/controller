@@ -35,6 +35,9 @@ class ControllerTest extends TestCase
 {
     private $container;
 
+    /**
+     * @var ActionResultInContainer
+     */
     private $action_result_container;
 
     public function setUp()
@@ -104,18 +107,11 @@ class ControllerTest extends TestCase
         $test_controller = new TestController(new FixedActionNameResolver('index'), $this->action_result_container);
         $this->assertSame($before_should_return, $test_controller->setBeforeShouldReturn($before_should_return)->getBeforeShouldReturn());
 
-        /** @var ServerRequestInterface $modified_request */
-        $modified_request = null;
-
-        $response = call_user_func($test_controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
-            $modified_request = $request;
-
-            return $response;
-        });
+        $response = call_user_func($test_controller, $this->createRequest(), $this->createResponse());
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $modified_request->getAttribute($test_controller->getActionResultAttributeName());
+        $action_result = $this->action_result_container->get();
         $this->assertInternalType('array', $action_result);
         $this->assertSame($before_should_return, $action_result);
     }
@@ -124,41 +120,11 @@ class ControllerTest extends TestCase
     {
         $test_controller = new TestController(new FixedActionNameResolver('index'), $this->action_result_container);
 
-        /** @var ServerRequestInterface $modified_request */
-        $modified_request = null;
-
-        $response = call_user_func($test_controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
-            $modified_request = $request;
-
-            return $response;
-        });
+        $response = call_user_func($test_controller, $this->createRequest(), $this->createResponse());
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $modified_request->getAttribute($test_controller->getActionResultAttributeName());
-        $this->assertInternalType('array', $action_result);
-        $this->assertSame([1, 2, 3], $action_result);
-    }
-
-    public function testActionResultAttributeNameChange()
-    {
-        $test_controller = new TestController(new FixedActionNameResolver('index'), 'new_action_result_key');
-
-        /** @var ServerRequestInterface $modified_request */
-        $modified_request = null;
-
-        $response = call_user_func($test_controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
-            $modified_request = $request;
-
-            return $response;
-        });
-        $this->assertInstanceOf(ResponseInterface::class, $response);
-
-        /* @var RuntimeException $action_result */
-        $this->assertArrayNotHasKey('action_result', $modified_request->getAttributes());
-        $this->assertArrayHasKey('new_action_result_key', $modified_request->getAttributes());
-
-        $action_result = $modified_request->getAttribute('new_action_result_key');
+        $action_result = $this->action_result_container->get();
         $this->assertInternalType('array', $action_result);
         $this->assertSame([1, 2, 3], $action_result);
     }
@@ -167,18 +133,12 @@ class ControllerTest extends TestCase
     {
         $controller = new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
-        /** @var ServerRequestInterface $modified_request */
-        $modified_request = null;
-
-        $response = call_user_func($controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
-            $modified_request = $request;
-
-            return $response;
-        });
+        $response = call_user_func($controller, $this->createRequest(), $this->createResponse());
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $modified_request->getAttribute($controller->getActionResultAttributeName());
+        $action_result = $this->action_result_container->get();
+
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertInstanceOf(ParseError::class, $action_result->getPrevious());
     }
@@ -200,18 +160,11 @@ class ControllerTest extends TestCase
 
         $this->assertSame('Sorry :( {message}', $controller->getClientSafeExceptionMessage());
 
-        /** @var ServerRequestInterface $modified_request */
-        $modified_request = null;
-
-        $response = call_user_func($controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
-            $modified_request = $request;
-
-            return $response;
-        });
+        $response = call_user_func($controller, $this->createRequest(), $this->createResponse());
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $modified_request->getAttribute($controller->getActionResultAttributeName());
+        $action_result = $this->action_result_container->get();
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertEquals('Sorry :( Error parsing our awesome code.', $action_result->getMessage());
     }
@@ -244,9 +197,6 @@ class ControllerTest extends TestCase
 
         $this->assertInstanceOf(LoggerInterface::class, $controller->getLogger());
 
-        /** @var ServerRequestInterface $modified_request */
-        $modified_request = null;
-
         $response = call_user_func($controller, $this->createRequest(), $this->createResponse());
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
@@ -263,15 +213,11 @@ class ControllerTest extends TestCase
         /** @var ServerRequestInterface $modified_request */
         $modified_request = null;
 
-        $response = call_user_func($controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
-            $modified_request = $request;
-
-            return $response;
-        });
+        $response = call_user_func($controller, $this->createRequest(), $this->createResponse());
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $modified_request->getAttribute($controller->getActionResultAttributeName());
+        $action_result = $this->action_result_container->get();
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertInstanceOf(LogicException::class, $action_result->getPrevious());
     }
@@ -283,18 +229,11 @@ class ControllerTest extends TestCase
 
         $this->assertSame('Sorry :( {message}', $controller->getClientSafeExceptionMessage());
 
-        /** @var ServerRequestInterface $modified_request */
-        $modified_request = null;
-
-        $response = call_user_func($controller, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) use (&$modified_request) {
-            $modified_request = $request;
-
-            return $response;
-        });
+        $response = call_user_func($controller, $this->createRequest(), $this->createResponse());
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $modified_request->getAttribute($controller->getActionResultAttributeName());
+        $action_result = $this->action_result_container->get();
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertEquals('Sorry :( App logic is broken.', $action_result->getMessage());
     }
@@ -380,6 +319,14 @@ class ControllerTest extends TestCase
 
         $this->assertInstanceOf(StatusResultInterface::class, $result);
         $this->assertSame(404, $result->getStatusCode());
+    }
+
+    public function testConflict()
+    {
+        $result = $this->createTestController()->conflict();
+
+        $this->assertInstanceOf(StatusResultInterface::class, $result);
+        $this->assertSame(409, $result->getStatusCode());
     }
 
     /**
