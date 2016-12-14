@@ -18,8 +18,9 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^1.0",
         "monolog/monolog": "^1.0",
+        "pimple/pimple": "^3.0",
         "phpunit/phpunit": "^5.0",
-        "slim/http": "^0.1.0"
+        "slim/http": "0.1.0"
     },
     "suggest": {
         "slim/http": "Allow using of chunked file download"
