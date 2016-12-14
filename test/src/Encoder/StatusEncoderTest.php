@@ -15,10 +15,27 @@ use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ArrayEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\StatusEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
+use Pimple\Container;
 use Psr\Http\Message\ResponseInterface;
 
 class StatusEncoderTest extends TestCase
 {
+    private $container;
+
+    /**
+     * @var ActionResultInContainer
+     */
+    private $action_result_container;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->container = new Container();
+        $this->action_result_container = new ActionResultInContainer($this->container);
+    }
+
     public function testShouldEncode()
     {
         $this->assertFalse((new StatusEncoder())->shouldEncode([1, 2, 3]));
@@ -30,7 +47,7 @@ class StatusEncoderTest extends TestCase
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $response = (new StatusEncoder())->encode($response, new ActionResultEncoder(), new StatusResult(200, 'All good.'));
+        $response = (new StatusEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), new StatusResult(200, 'All good.'));
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 
@@ -44,7 +61,7 @@ class StatusEncoderTest extends TestCase
 
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $encoder = new ActionResultEncoder('action_result', new ArrayEncoder());
+        $encoder = new ActionResultEncoder($this->action_result_container, new ArrayEncoder());
         $this->assertCount(1, $encoder->getValueEncoders());
 
         $response = (new StatusEncoder())->encode($response, $encoder, new StatusResult(200, 'All good.', $data_to_encode));

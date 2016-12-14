@@ -15,10 +15,27 @@ use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\FileDownloadEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
+use Pimple\Container;
 use Psr\Http\Message\ResponseInterface;
 
 class FileDownloadEncoderTest extends TestCase
 {
+    private $container;
+
+    /**
+     * @var ActionResultInContainer
+     */
+    private $action_result_container;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->container = new Container();
+        $this->action_result_container = new ActionResultInContainer($this->container);
+    }
+
     public function testShouldEncode()
     {
         $this->assertFalse((new FileDownloadEncoder())->shouldEncode([1, 2, 3]));
@@ -32,7 +49,7 @@ class FileDownloadEncoderTest extends TestCase
 
         $file_download = new FileDownloadResult(__FILE__, 'text/php');
 
-        $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder(), $file_download);
+        $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 
@@ -70,7 +87,7 @@ class FileDownloadEncoderTest extends TestCase
 
         $file_download = new FileDownloadResult(__FILE__, 'text/php', true);
 
-        $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder(), $file_download);
+        $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 

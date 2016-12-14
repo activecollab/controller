@@ -12,6 +12,7 @@
         "activecollab/containeraccess": "^1.0",
         "activecollab/etag": "^1.0",
         "activecollab/templateengine": "^1.0",
+        "activecollab/utils": "^1.0",
         "psr/http-message": "^1.0",
         "psr/log": "~1.0"
     },

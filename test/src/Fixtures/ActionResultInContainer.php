@@ -12,6 +12,7 @@ namespace ActiveCollab\Controller\Test\Fixtures;
 
 use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
 use Pimple\Container;
+use RuntimeException;
 
 class ActionResultInContainer implements ActionResultContainerInterface
 {
@@ -30,7 +31,11 @@ class ActionResultInContainer implements ActionResultContainerInterface
 
     public function get()
     {
-        return $this->container[$this->key];
+        if ($this->has()) {
+            return $this->container[$this->key];
+        }
+
+        throw new RuntimeException('Action result not found in the container.');
     }
 
     public function has(): bool

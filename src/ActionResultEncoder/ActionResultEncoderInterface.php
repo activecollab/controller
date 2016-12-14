@@ -10,15 +10,16 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder;
 
+use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface ActionResultEncoderInterface
 {
-    public function getActionResultKey(): string;
+    public function getActionResultContainer(): ActionResultContainerInterface;
 
-    public function &setActionResultKey(string $action_result_key): ActionResultEncoderInterface;
+    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ActionResultEncoderInterface;
 
     public function getEncodeOnExit(): bool;
 
@@ -26,7 +27,7 @@ interface ActionResultEncoderInterface
 
     public function getValueEncoders(): array;
 
-    public function &addValueEncoder(ValueEncoderInterface $value_encoder): ActionResultEncoderInterface;
+    public function &addValueEncoder(ValueEncoderInterface ...$value_encoders): ActionResultEncoderInterface;
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface;
 

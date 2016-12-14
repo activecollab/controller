@@ -15,10 +15,27 @@ use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\MovedResourceEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
+use Pimple\Container;
 use Psr\Http\Message\ResponseInterface;
 
 class MovedResourceEncoderTest extends TestCase
 {
+    private $container;
+
+    /**
+     * @var ActionResultInContainer
+     */
+    private $action_result_container;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->container = new Container();
+        $this->action_result_container = new ActionResultInContainer($this->container);
+    }
+
     public function testShouldEncode()
     {
         $this->assertFalse((new MovedResourceEncoder())->shouldEncode([1, 2, 3]));
@@ -35,7 +52,7 @@ class MovedResourceEncoderTest extends TestCase
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder(), new MovedResult('https://activecollab.com'));
+        $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), new MovedResult('https://activecollab.com'));
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 
@@ -48,7 +65,7 @@ class MovedResourceEncoderTest extends TestCase
     {
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
-        $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder(), new MovedResult('https://activecollab.com', true));
+        $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), new MovedResult('https://activecollab.com', true));
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
 

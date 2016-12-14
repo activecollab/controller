@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8c4a81d00fa23b9c7920f6096b69ab93",
-    "content-hash": "aa524822a399ec7f6d127e3ffba0af7b",
+    "hash": "4ffb40a36765af83df06e222bb7b536b",
+    "content-hash": "941b51e5bedf715c8b4b36c15febdfe6",
     "packages": [
         {
             "name": "activecollab/containeraccess",
@@ -137,6 +137,46 @@
                 "view"
             ],
             "time": "2016-05-22 11:42:16"
+        },
+        {
+            "name": "activecollab/utils",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/activecollab/utils.git",
+                "reference": "e53c6a8272d431dfaee7e8599cb895784fa7e818"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/activecollab/utils/zipball/e53c6a8272d431dfaee7e8599cb895784fa7e818",
+                "reference": "e53c6a8272d431dfaee7e8599cb895784fa7e818",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "fabpot/php-cs-fixer": "^1.0",
+                "phpunit/phpunit": "^5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ActiveCollab\\CurrentTimestamp\\": "src/CurrentTimestamp",
+                    "ActiveCollab\\ValueContainer\\": "src/ValueContainer",
+                    "ActiveCollab\\Encryptor\\": "src/Encryptor"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A collection of small, useful components",
+            "keywords": [
+                "timestamp"
+            ],
+            "time": "2016-12-14 22:11:11"
         },
         {
             "name": "container-interop/container-interop",

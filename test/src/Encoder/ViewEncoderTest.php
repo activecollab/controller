@@ -15,11 +15,20 @@ use ActiveCollab\Controller\ActionResult\ViewResult\ViewResult;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ViewEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
 use ActiveCollab\TemplateEngine\TemplateEngine\PhpTemplateEngine;
+use Pimple\Container;
 use Psr\Http\Message\ResponseInterface;
 
 class ViewEncoderTest extends TestCase
 {
+    private $container;
+
+    /**
+     * @var ActionResultInContainer
+     */
+    private $action_result_container;
+
     private $templates_path;
 
     private $template_engine;
@@ -27,6 +36,9 @@ class ViewEncoderTest extends TestCase
     public function setUp()
     {
         parent::setUp();
+
+        $this->container = new Container();
+        $this->action_result_container = new ActionResultInContainer($this->container);
 
         $this->templates_path = dirname(__DIR__, 2) . '/templates';
         $this->assertDirectoryExists($this->templates_path);
@@ -49,7 +61,7 @@ class ViewEncoderTest extends TestCase
             'first_name' => 'John Doe',
         ]);
 
-        $response = (new ViewEncoder($this->template_engine))->encode($response, new ActionResultEncoder(), $view);
+        $response = (new ViewEncoder($this->template_engine))->encode($response, new ActionResultEncoder($this->action_result_container), $view);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
         $this->assertContains('text/html', $response->getHeaderLine('Content-Type'));

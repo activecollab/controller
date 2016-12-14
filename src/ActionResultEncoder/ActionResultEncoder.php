@@ -12,8 +12,8 @@ namespace ActiveCollab\Controller\ActionResultEncoder;
 
 use ActiveCollab\ContainerAccess\ContainerAccessInterface;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as ContainerAccessImplementation;
+use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -22,33 +22,32 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
 {
     use ContainerAccessImplementation;
 
-    private $action_result_key;
+    /**
+     * @var ActionResultContainerInterface
+     */
+    private $action_result_container;
 
     private $encode_on_exit = false;
 
     /**
      * @var ValueEncoderInterface[]
      */
-    private $value_encoders;
+    private $value_encoders = [];
 
-    public function __construct(string $action_result_key = 'action_result', ValueEncoderInterface ...$value_encoders)
+    public function __construct(ActionResultContainerInterface $action_result_container, ValueEncoderInterface ...$value_encoders)
     {
-        if (empty($action_result_key)) {
-            throw new InvalidArgumentException('Request attribute name is required.');
-        }
-
-        $this->action_result_key = $action_result_key;
-        $this->value_encoders = $value_encoders;
+        $this->setActionResultContainer($action_result_container);
+        $this->addValueEncoder(...$value_encoders);
     }
 
-    public function getActionResultKey(): string
+    public function getActionResultContainer(): ActionResultContainerInterface
     {
-        return $this->action_result_key;
+        return $this->action_result_container;
     }
 
-    public function &setActionResultKey(string $action_result_key): ActionResultEncoderInterface
+    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ActionResultEncoderInterface
     {
-        $this->action_result_key = $action_result_key;
+        $this->action_result_container = $action_result_container;
 
         return $this;
     }
@@ -70,9 +69,9 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         return $this->value_encoders;
     }
 
-    public function &addValueEncoder(ValueEncoderInterface $value_encoder): ActionResultEncoderInterface
+    public function &addValueEncoder(ValueEncoderInterface ...$value_encoders): ActionResultEncoderInterface
     {
-        $this->value_encoders[] = $value_encoder;
+        $this->value_encoders = array_merge($this->value_encoders, $value_encoders);
 
         return $this;
     }
@@ -80,7 +79,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         if (!$this->getEncodeOnExit()) {
-            $response = $this->encodeToResponse($request, $response, $this->getActionResultKey());
+            $response = $this->encode($response, $this->action_result_container->get());
         }
 
         if ($next) {
@@ -88,7 +87,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         }
 
         if ($this->getEncodeOnExit()) {
-            $response = $this->encodeToResponse($request, $response, $this->getActionResultKey());
+            $response = $this->encode($response, $this->action_result_container->get());
         }
 
         return $response;
@@ -103,15 +102,6 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         }
 
         throw new RuntimeException("No matching encoder for value of {$this->getValueType($value)} type found.");
-    }
-
-    private function encodeToResponse(ServerRequestInterface $request, ResponseInterface $response, string $action_result_key): ResponseInterface
-    {
-        if (!array_key_exists($action_result_key, $request->getAttributes())) {
-            throw new RuntimeException("Request attribute '{$action_result_key}' not found.");
-        }
-
-        return $this->encode($response, $request->getAttribute($action_result_key));
     }
 
     private function getValueType($value): string

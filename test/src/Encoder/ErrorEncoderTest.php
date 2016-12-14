@@ -14,13 +14,30 @@ use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ErrorEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
 use LogicException;
 use ParseError;
+use Pimple\Container;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 class ErrorEncoderTest extends TestCase
 {
+    private $container;
+
+    /**
+     * @var ActionResultInContainer
+     */
+    private $action_result_container;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->container = new Container();
+        $this->action_result_container = new ActionResultInContainer($this->container);
+    }
+
     public function testShouldEncode()
     {
         $this->assertFalse((new ErrorEncoder())->shouldEncode([1, 2, 3]));
@@ -39,7 +56,7 @@ class ErrorEncoderTest extends TestCase
         $encoder = new ErrorEncoder();
         $this->assertFalse($encoder->getDisplayErrorDetails());
 
-        $response = $encoder->encode($response, new ActionResultEncoder(), $exception);
+        $response = $encoder->encode($response, new ActionResultEncoder($this->action_result_container), $exception);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
         $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));
@@ -66,7 +83,7 @@ class ErrorEncoderTest extends TestCase
         $encoder->setDisplayErrorDetails(true);
         $this->assertTrue($encoder->getDisplayErrorDetails());
 
-        $response = $encoder->encode($response, new ActionResultEncoder(), $exception);
+        $response = $encoder->encode($response, new ActionResultEncoder($this->action_result_container), $exception);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertContains('yes', $response->getHeaderLine('X-Test'));
         $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));
