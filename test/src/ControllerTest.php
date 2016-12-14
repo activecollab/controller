@@ -111,7 +111,7 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $this->action_result_container->get();
+        $action_result = $this->action_result_container->getValue();
         $this->assertInternalType('array', $action_result);
         $this->assertSame($before_should_return, $action_result);
     }
@@ -124,9 +124,28 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $this->action_result_container->get();
+        $action_result = $this->action_result_container->getValue();
         $this->assertInternalType('array', $action_result);
         $this->assertSame([1, 2, 3], $action_result);
+    }
+
+    public function testNextMiddlewareIsCalled()
+    {
+        $test_controller = new TestController(new FixedActionNameResolver('index'), $this->action_result_container);
+
+        /** @var ResponseInterface $response */
+        $response = call_user_func($test_controller, $this->createRequest(), $this->createResponse(), function(ServerRequestInterface $request, ResponseInterface $response, callable $next = null) {
+            $response = $response->withHeader('X-NextIsCalled', 'yes!');
+
+            if ($next) {
+                $response = $next($request, $response);
+            }
+
+            return $response;
+        });
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+
+        $this->assertSame('yes!', $response->getHeaderLine('X-NextIsCalled'));
     }
 
     public function testErrorsAreClientSafe()
@@ -137,7 +156,7 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $this->action_result_container->get();
+        $action_result = $this->action_result_container->getValue();
 
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertInstanceOf(ParseError::class, $action_result->getPrevious());
@@ -164,7 +183,7 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $this->action_result_container->get();
+        $action_result = $this->action_result_container->getValue();
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertEquals('Sorry :( Error parsing our awesome code.', $action_result->getMessage());
     }
@@ -217,7 +236,7 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $this->action_result_container->get();
+        $action_result = $this->action_result_container->getValue();
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertInstanceOf(LogicException::class, $action_result->getPrevious());
     }
@@ -233,7 +252,7 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         /** @var RuntimeException $action_result */
-        $action_result = $this->action_result_container->get();
+        $action_result = $this->action_result_container->getValue();
         $this->assertInstanceOf(RuntimeException::class, $action_result);
         $this->assertEquals('Sorry :( App logic is broken.', $action_result->getMessage());
     }

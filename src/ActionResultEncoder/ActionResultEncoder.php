@@ -79,7 +79,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         if (!$this->getEncodeOnExit()) {
-            $response = $this->encode($response, $this->action_result_container->get());
+            $response = $this->encode($response, $this->action_result_container->getValue());
         }
 
         if ($next) {
@@ -87,7 +87,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         }
 
         if ($this->getEncodeOnExit()) {
-            $response = $this->encode($response, $this->action_result_container->get());
+            $response = $this->encode($response, $this->action_result_container->getValue());
         }
 
         return $response;

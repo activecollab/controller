@@ -10,11 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResult\Container;
 
-interface ActionResultContainerInterface
+use ActiveCollab\ValueContainer\ValueContainerInterface;
+
+interface ActionResultContainerInterface extends ValueContainerInterface
 {
-    public function has(): bool;
-
-    public function get();
-
-    public function &set($action_result): ActionResultContainerInterface;
 }

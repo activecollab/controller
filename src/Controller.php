@@ -97,9 +97,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
             }
         }
 
-        $this->getActionResultContainer()->set($action_result);
-
-        // $request = $request->withAttribute($this->getActionResultAttributeName(), $action_result);
+        $this->getActionResultContainer()->setValue($action_result);
 
         if ($next) {
             $response = $next($request, $response);

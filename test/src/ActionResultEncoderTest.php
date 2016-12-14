@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test;
 
+use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ArrayEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
@@ -35,6 +36,11 @@ class ActionResultEncoderTest extends TestCase
         $this->action_result_container = new ActionResultInContainer($this->container);
     }
 
+    public function testActionResultContainerIsAccessible()
+    {
+        $this->assertInstanceOf(ActionResultContainerInterface::class, (new ActionResultEncoder($this->action_result_container))->getActionResultContainer());
+    }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Action result not found in the container.
@@ -50,8 +56,8 @@ class ActionResultEncoderTest extends TestCase
      */
     public function testExceptionWhenNoMatchingEncoderIsFound()
     {
-        $this->action_result_container->set([1, 2, 3]);
-        $this->assertTrue($this->action_result_container->has());
+        $this->action_result_container->setValue([1, 2, 3]);
+        $this->assertTrue($this->action_result_container->hasValue());
 
         $encoder = new ActionResultEncoder($this->action_result_container);
         $this->assertCount(0, $encoder->getValueEncoders());
@@ -67,8 +73,8 @@ class ActionResultEncoderTest extends TestCase
         $encoder->addValueEncoder(new ArrayEncoder());
         $this->assertCount(1, $encoder->getValueEncoders());
 
-        $this->action_result_container->set([1, 2, 3]);
-        $this->assertTrue($this->action_result_container->has());
+        $this->action_result_container->setValue([1, 2, 3]);
+        $this->assertTrue($this->action_result_container->hasValue());
 
         /** @var ResponseInterface $response */
         $response = call_user_func($encoder, $this->createRequest(), $this->createResponse());
@@ -83,8 +89,8 @@ class ActionResultEncoderTest extends TestCase
         $encoder = new ActionResultEncoder($this->action_result_container, new ArrayEncoder());
         $this->assertCount(1, $encoder->getValueEncoders());
 
-        $this->action_result_container->set([1, 2, 3]);
-        $this->assertTrue($this->action_result_container->has());
+        $this->action_result_container->setValue([1, 2, 3]);
+        $this->assertTrue($this->action_result_container->hasValue());
 
         /** @var ResponseInterface $response */
         $response = call_user_func($encoder, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response) {
@@ -101,8 +107,8 @@ class ActionResultEncoderTest extends TestCase
 
         $this->assertTrue($encoder->getEncodeOnExit());
 
-        $this->action_result_container->set([1, 2, 3]);
-        $this->assertTrue($this->action_result_container->has());
+        $this->action_result_container->setValue([1, 2, 3]);
+        $this->assertTrue($this->action_result_container->hasValue());
 
         /** @var ResponseInterface $response */
         $response = call_user_func($encoder, $this->createRequest(), $this->createResponse(), function (ServerRequestInterface $request, ResponseInterface $response, callable $next = null) {

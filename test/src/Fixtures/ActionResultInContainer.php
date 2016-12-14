@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\Test\Fixtures;
 
 use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
+use LogicException;
 use Pimple\Container;
 use RuntimeException;
 
@@ -29,24 +30,29 @@ class ActionResultInContainer implements ActionResultContainerInterface
         $this->key = $key;
     }
 
-    public function get()
+    public function getValue()
     {
-        if ($this->has()) {
+        if ($this->hasValue()) {
             return $this->container[$this->key];
         }
 
         throw new RuntimeException('Action result not found in the container.');
     }
 
-    public function has(): bool
+    public function hasValue()
     {
         return $this->container->offsetExists($this->key);
     }
 
-    public function &set($action_result): ActionResultContainerInterface
+    public function &setValue($value)
     {
-        $this->container[$this->key] = $action_result;
+        $this->container[$this->key] = $value;
 
         return $this;
+    }
+
+    public function removeValue()
+    {
+        throw new LogicException("Value can't be removed.");
     }
 }
