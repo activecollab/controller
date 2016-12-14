@@ -14,6 +14,7 @@ use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
 use ActiveCollab\Controller\ActionResult\StatusResult\StatusResultInterface;
 use ActiveCollab\Controller\ControllerInterface;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
 use ActiveCollab\Controller\Test\Fixtures\ErrorThrowingController;
 use ActiveCollab\Controller\Test\Fixtures\FixedActionNameResolver;
 use ActiveCollab\Controller\Test\Fixtures\TestController;
@@ -21,6 +22,7 @@ use LogicException;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use ParseError;
+use Pimple\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -31,6 +33,18 @@ use RuntimeException;
  */
 class ControllerTest extends TestCase
 {
+    private $container;
+
+    private $action_result_container;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->container = new Container();
+        $this->action_result_container = new ActionResultInContainer($this->container);
+    }
+
     public function testControllerIsConfigured()
     {
         $default_properties = (new \ReflectionClass(TestController::class))->getDefaultProperties();
@@ -38,18 +52,18 @@ class ControllerTest extends TestCase
 
         $this->assertFalse($default_properties['is_configured']);
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
         $this->assertTrue($controller->is_configured);
     }
 
     public function testControllerName()
     {
-        $test_controller = new TestController(new FixedActionNameResolver('throwPhpError'));
+        $test_controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
         $this->assertEquals('TestController', $test_controller->getControllerName());
 
         require __DIR__ . '/Fixtures/GlobalNamespaceController.php';
 
-        $test_controller = new \GlobalNamespaceController(new FixedActionNameResolver('throwPhpError'));
+        $test_controller = new \GlobalNamespaceController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
         $this->assertEquals('GlobalNamespaceController', $test_controller->getControllerName());
     }
 
@@ -59,7 +73,7 @@ class ControllerTest extends TestCase
      */
     public function testActionNameNotResolved()
     {
-        $test_controller = new TestController(new FixedActionNameResolver(new RuntimeException('Throw me!')));
+        $test_controller = new TestController(new FixedActionNameResolver(new RuntimeException('Throw me!')), $this->action_result_container);
         call_user_func($test_controller, $this->createRequest(), $this->createResponse());
     }
 
@@ -69,7 +83,7 @@ class ControllerTest extends TestCase
      */
     public function testActionNameIsEmpty()
     {
-        $test_controller = new TestController(new FixedActionNameResolver(''));
+        $test_controller = new TestController(new FixedActionNameResolver(''), $this->action_result_container);
         call_user_func($test_controller, $this->createRequest(), $this->createResponse());
     }
 
@@ -79,7 +93,7 @@ class ControllerTest extends TestCase
      */
     public function testActionNotFound()
     {
-        $test_controller = new TestController(new FixedActionNameResolver('not an action name'));
+        $test_controller = new TestController(new FixedActionNameResolver('not an action name'), $this->action_result_container);
         call_user_func($test_controller, $this->createRequest(), $this->createResponse());
     }
 
@@ -87,7 +101,7 @@ class ControllerTest extends TestCase
     {
         $before_should_return = [3, 2, 1];
 
-        $test_controller = new TestController(new FixedActionNameResolver('index'));
+        $test_controller = new TestController(new FixedActionNameResolver('index'), $this->action_result_container);
         $this->assertSame($before_should_return, $test_controller->setBeforeShouldReturn($before_should_return)->getBeforeShouldReturn());
 
         /** @var ServerRequestInterface $modified_request */
@@ -108,7 +122,7 @@ class ControllerTest extends TestCase
 
     public function testActionResult()
     {
-        $test_controller = new TestController(new FixedActionNameResolver('index'));
+        $test_controller = new TestController(new FixedActionNameResolver('index'), $this->action_result_container);
 
         /** @var ServerRequestInterface $modified_request */
         $modified_request = null;
@@ -151,7 +165,7 @@ class ControllerTest extends TestCase
 
     public function testErrorsAreClientSafe()
     {
-        $controller = new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'));
+        $controller = new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 
         /** @var ServerRequestInterface $modified_request */
         $modified_request = null;
@@ -175,13 +189,13 @@ class ControllerTest extends TestCase
      */
     public function testClientSafePhpErrorMessageCantBeEmpty()
     {
-        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container))
             ->setClientSafeExceptionMessage('');
     }
 
     public function testClientSafePhpErrorMessageCanBeChanged()
     {
-        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container))
             ->setClientSafeExceptionMessage('Sorry :( {message}');
 
         $this->assertSame('Sorry :( {message}', $controller->getClientSafeExceptionMessage());
@@ -208,13 +222,13 @@ class ControllerTest extends TestCase
      */
     public function testPhpErrorLogMessageCantBeEmpty()
     {
-        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container))
             ->setLogPhpErrorMessage('');
     }
 
     public function testPhpErrorLogMessageSet()
     {
-        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container))
             ->setLogPhpErrorMessage('Failed due to a PHP error');
 
         $this->assertSame('Failed due to a PHP error', $controller->getLogPhpErrorMessage());
@@ -225,7 +239,7 @@ class ControllerTest extends TestCase
         $test_handler = new TestHandler();
         $logger = new Logger('test', [$test_handler]);
 
-        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), 'action_result', $logger))
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container, $logger))
             ->setLogPhpErrorMessage('Failed due to a PHP error');
 
         $this->assertInstanceOf(LoggerInterface::class, $controller->getLogger());
@@ -244,7 +258,7 @@ class ControllerTest extends TestCase
 
     public function testExceptionsAreClientSafe()
     {
-        $controller = new ErrorThrowingController(new FixedActionNameResolver('throwException'));
+        $controller = new ErrorThrowingController(new FixedActionNameResolver('throwException'), $this->action_result_container);
 
         /** @var ServerRequestInterface $modified_request */
         $modified_request = null;
@@ -264,7 +278,7 @@ class ControllerTest extends TestCase
 
     public function testClientSafeExceptionMessageCanBeChanged()
     {
-        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException')))
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException'), $this->action_result_container))
             ->setClientSafeExceptionMessage('Sorry :( {message}');
 
         $this->assertSame('Sorry :( {message}', $controller->getClientSafeExceptionMessage());
@@ -291,13 +305,13 @@ class ControllerTest extends TestCase
      */
     public function testExceptionLogMessageCantBeEmpty()
     {
-        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError')))
+        (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container))
             ->setLogExceptionMessage('');
     }
 
     public function testExceptionLogMessageSet()
     {
-        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException')))
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException'), $this->action_result_container))
             ->setLogExceptionMessage('Failed due to an exception');
 
         $this->assertSame('Failed due to an exception', $controller->getLogExceptionMessage());
@@ -308,7 +322,7 @@ class ControllerTest extends TestCase
         $test_handler = new TestHandler();
         $logger = new Logger('test', [$test_handler]);
 
-        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException'), 'action_result', $logger))
+        $controller = (new ErrorThrowingController(new FixedActionNameResolver('throwException'), $this->action_result_container, $logger))
             ->setLogExceptionMessage('Failed due to an exception');
 
         $this->assertSame('Failed due to an exception', $controller->getLogExceptionMessage());
@@ -394,6 +408,6 @@ class ControllerTest extends TestCase
         $test_handler = new TestHandler();
         $logger = new Logger('test', [$test_handler]);
 
-        return new TestController(new FixedActionNameResolver('not an action name'), 'action_result', $logger);
+        return new TestController(new FixedActionNameResolver('not an action name'), $this->action_result_container, $logger);
     }
 }

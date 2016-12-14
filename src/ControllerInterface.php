@@ -9,6 +9,7 @@
 namespace ActiveCollab\Controller;
 
 use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
+use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -18,120 +19,33 @@ use Psr\Log\LoggerInterface;
  */
 interface ControllerInterface
 {
-    /**
-     * Execute before any action.
-     *
-     * If this method returns a value that's not NULL, action execution will be skipped, and that value will be retuned.
-     *
-     * @param  ServerRequestInterface $request
-     * @return mixed
-     */
     public function __before(ServerRequestInterface $request);
 
-    /**
-     * Handle request, and return the response.
-     *
-     * @param  ServerRequestInterface $request
-     * @param  ResponseInterface      $response
-     * @param  callable|null          $next
-     * @return ResponseInterface
-     */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface;
 
-    /**
-     * Return controller name, without namespace.
-     *
-     * @return string
-     */
     public function getControllerName(): string;
 
-    /**
-     * Return action name resolver.
-     *
-     * @return ActionNameResolverInterface
-     */
     public function getActionNameResolver(): ActionNameResolverInterface;
 
-    /**
-     * Set action name resolver interface.
-     *
-     * @param  ActionNameResolverInterface $action_name_resolver
-     * @return ControllerInterface|$this
-     */
     public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver): ControllerInterface;
 
-    /**
-     * @return string
-     */
-    public function getActionResultAttributeName(): string;
+    public function getActionResultContainer(): ActionResultContainerInterface;
 
-    /**
-     * @param  string              $action_result_attribute_name
-     * @return ControllerInterface
-     */
-    public function &setActionResultAttributeName(string $action_result_attribute_name): ControllerInterface;
+    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ControllerInterface;
 
-    /**
-     * Return logger.
-     *
-     * @return LoggerInterface|null
-     */
     public function getLogger();
 
-    /**
-     * Set logger.
-     *
-     * @param  LoggerInterface|null      $logger
-     * @return ControllerInterface|$this
-     */
     public function &setLogger(LoggerInterface $logger = null): ControllerInterface;
 
-    /**
-     * Return message that is returned as 500 error when action breaks due to an exception.
-     *
-     * @return string
-     */
     public function getClientSafeExceptionMessage(): string;
 
-    /**
-     * Set message that is returned as 500 error when action breaks due to exception.
-     *
-     * If you wish to include actual exception's message, add {message} to the test. Example:
-     *
-     * $controller->setActionExceptionMessage('Failed because {message}');
-     *
-     * @param  string                    $message
-     * @return ControllerInterface|$this
-     */
     public function &setClientSafeExceptionMessage(string $message): ControllerInterface;
 
-    /**
-     * Return message that will be logged if controller action fails due to an exception.
-     *
-     * @return string
-     */
     public function getLogExceptionMessage(): string;
 
-    /**
-     * Set message that will be logged if controller action fails due to an exception.
-     *
-     * @param  string                    $message
-     * @return ControllerInterface|$this
-     */
     public function &setLogExceptionMessage(string $message): ControllerInterface;
 
-    /**
-     * Return message that will be logged if controller action fails due to a PHP error.
-     *
-     * @return string
-     */
     public function getLogPhpErrorMessage(): string;
 
-    /**
-     * Set message that will be logged if controller action fails due to a PHP error.
-     *
-     * @param  string                    $message
-     * @return ControllerInterface|$this
-     */
     public function &setLogPhpErrorMessage(string $message): ControllerInterface;
 }

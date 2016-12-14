@@ -10,14 +10,18 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder;
 
+use ActiveCollab\ContainerAccess\ContainerAccessInterface;
+use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as ContainerAccessImplementation;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
-class ActionResultEncoder implements ActionResultEncoderInterface
+class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAccessInterface
 {
+    use ContainerAccessImplementation;
+
     private $action_result_key;
 
     private $encode_on_exit = false;

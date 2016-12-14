@@ -13,6 +13,7 @@ namespace ActiveCollab\Controller;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as ContainerAccessInterfaceImplementation;
 use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
+use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
 use ActiveCollab\Controller\ActionResult\MovedResult\MovedResult;
 use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
 use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
@@ -38,11 +39,8 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     private $action_name_resolver;
 
-    private $action_result_attribute_name;
+    private $action_result_container;
 
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
 
     private $client_safe_exception_message = 'Whoops, something went wrong...';
@@ -51,10 +49,10 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     private $log_php_error_message = 'Controller action aborted due to a PHP error.';
 
-    public function __construct(ActionNameResolverInterface $action_name_resolver, string $action_result_attribute_name = 'action_result', LoggerInterface $logger = null)
+    public function __construct(ActionNameResolverInterface $action_name_resolver, ActionResultContainerInterface $action_result_container, LoggerInterface $logger = null)
     {
         $this->setActionNameResolver($action_name_resolver);
-        $this->setActionResultAttributeName($action_result_attribute_name);
+        $this->setActionResultContainer($action_result_container);
         $this->setLogger($logger);
 
         $this->configure();
@@ -99,7 +97,9 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
             }
         }
 
-        $request = $request->withAttribute($this->getActionResultAttributeName(), $action_result);
+        $this->getActionResultContainer()->set($action_result);
+
+        // $request = $request->withAttribute($this->getActionResultAttributeName(), $action_result);
 
         if ($next) {
             $response = $next($request, $response);
@@ -137,14 +137,14 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    public function getActionResultAttributeName(): string
+    public function getActionResultContainer(): ActionResultContainerInterface
     {
-        return $this->action_result_attribute_name;
+        return $this->action_result_container;
     }
 
-    public function &setActionResultAttributeName(string $action_result_attribute_name): ControllerInterface
+    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ControllerInterface
     {
-        $this->action_result_attribute_name = $action_result_attribute_name;
+        $this->action_result_container = $action_result_container;
 
         return $this;
     }
@@ -211,8 +211,8 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     private function handleException(Exception $exception): Exception
     {
-        if ($this->logger) {
-            $this->logger->error($this->getLogExceptionMessage(), [
+        if ($this->getLogger()) {
+            $this->getLogger()->error($this->getLogExceptionMessage(), [
                 'exception' => $exception,
             ]);
         }
@@ -224,8 +224,8 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     private function handlePhpError(Throwable $php_error): Exception
     {
-        if ($this->logger) {
-            $this->logger->error($this->getLogPhpErrorMessage(), [
+        if ($this->getLogger()) {
+            $this->getLogger()->error($this->getLogPhpErrorMessage(), [
                 'exception' => $php_error,
             ]);
         }
