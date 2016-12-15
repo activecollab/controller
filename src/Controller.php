@@ -277,9 +277,9 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return array_key_exists($param_name, $request->getServerParams()) ? $request->getServerParams()[$param_name] : $default;
     }
 
-    public function ok(): StatusResultInterface
+    public function ok(string $message = ''): StatusResultInterface
     {
-        return new StatusResult(200);
+        return new StatusResult(200, $message);
     }
 
     public function created($payload = null): StatusResultInterface
@@ -287,24 +287,24 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return new StatusResult(201, '', $payload);
     }
 
-    public function badRequest(): StatusResultInterface
+    public function badRequest(string $message = ''): StatusResultInterface
     {
-        return new StatusResult(400);
+        return new StatusResult(400, $message);
     }
 
-    public function forbidden(): StatusResultInterface
+    public function forbidden(string $message = ''): StatusResultInterface
     {
-        return new StatusResult(403);
+        return new StatusResult(403, $message);
     }
 
-    public function notFound(): StatusResultInterface
+    public function notFound(string $message = ''): StatusResultInterface
     {
-        return new StatusResult(404);
+        return new StatusResult(404, $message);
     }
 
-    public function conflict(): StatusResultInterface
+    public function conflict(string $message = ''): StatusResultInterface
     {
-        return new StatusResult(409);
+        return new StatusResult(409, $message);
     }
 
     public function moved(string $url, bool $is_moved_permanently = false): MovedResultInterface

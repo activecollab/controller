@@ -15,17 +15,17 @@ use ActiveCollab\Controller\ActionResult\StatusResult\StatusResultInterface;
 
 interface CommonResultsInterface
 {
-    public function ok(): StatusResultInterface;
+    public function ok(string $message = ''): StatusResultInterface;
 
     public function created($payload = null): StatusResultInterface;
 
-    public function badRequest(): StatusResultInterface;
+    public function badRequest(string $message = ''): StatusResultInterface;
 
-    public function forbidden(): StatusResultInterface;
+    public function forbidden(string $message = ''): StatusResultInterface;
 
-    public function notFound(): StatusResultInterface;
+    public function notFound(string $message = ''): StatusResultInterface;
 
-    public function conflict(): StatusResultInterface;
+    public function conflict(string $message = ''): StatusResultInterface;
 
     public function moved(string $url, bool $is_moved_permanently = false): MovedResultInterface;
 }
