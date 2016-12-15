@@ -39,6 +39,9 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     private $action_name_resolver;
 
+    /**
+     * @var ActionResultContainerInterface
+     */
     private $action_result_container;
 
     private $logger;
@@ -147,12 +150,12 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    public function getLogger()
+    public function getLogger(): ? LoggerInterface
     {
         return $this->logger;
     }
 
-    public function &setLogger(LoggerInterface $logger = null): ControllerInterface
+    public function &setLogger(LoggerInterface $logger = null) : ControllerInterface
     {
         $this->logger = $logger;
 
