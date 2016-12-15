@@ -140,16 +140,16 @@
         },
         {
             "name": "activecollab/utils",
-            "version": "1.0.0",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/activecollab/utils.git",
-                "reference": "e53c6a8272d431dfaee7e8599cb895784fa7e818"
+                "reference": "48825198abcad0d52bf63e40af939cbe5b211499"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/activecollab/utils/zipball/e53c6a8272d431dfaee7e8599cb895784fa7e818",
-                "reference": "e53c6a8272d431dfaee7e8599cb895784fa7e818",
+                "url": "https://api.github.com/repos/activecollab/utils/zipball/48825198abcad0d52bf63e40af939cbe5b211499",
+                "reference": "48825198abcad0d52bf63e40af939cbe5b211499",
                 "shasum": ""
             },
             "require": {
@@ -176,7 +176,7 @@
             "keywords": [
                 "timestamp"
             ],
-            "time": "2016-12-14 22:11:11"
+            "time": "2016-12-15 01:11:38"
         },
         {
             "name": "container-interop/container-interop",

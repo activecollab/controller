@@ -11,7 +11,8 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\ActionResult\Container;
 
 use ActiveCollab\ValueContainer\ValueContainerInterface;
+use ActiveCollab\ValueContainer\WriteableValueContainerInterface;
 
-interface ActionResultContainerInterface extends ValueContainerInterface
+interface ActionResultContainerInterface extends ValueContainerInterface, WriteableValueContainerInterface
 {
 }
