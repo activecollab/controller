@@ -16,6 +16,7 @@ use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterfac
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAccessInterface
@@ -28,6 +29,11 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
     private $action_result_container;
 
     private $encode_on_exit = false;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @var ValueEncoderInterface[]
@@ -64,6 +70,18 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         return $this;
     }
 
+    public function getLogger(): ?LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    public function &setLogger(LoggerInterface $logger = null): ActionResultEncoderInterface
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
     public function getValueEncoders(): array
     {
         return $this->value_encoders;
@@ -79,7 +97,7 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         if (!$this->getEncodeOnExit()) {
-            $response = $this->encode($response, $this->action_result_container->getValue());
+            $response = $this->tryToEncodeValue($response, $this->action_result_container);
         }
 
         if ($next) {
@@ -87,7 +105,18 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         }
 
         if ($this->getEncodeOnExit()) {
+            $response = $this->tryToEncodeValue($response, $this->action_result_container);
+        }
+
+        return $response;
+    }
+
+    private function tryToEncodeValue(ResponseInterface $response, ActionResultContainerInterface $action_result_container)
+    {
+        if ($action_result_container->hasValue()) {
             $response = $this->encode($response, $this->action_result_container->getValue());
+        } else if ($this->getLogger()) {
+            $this->getLogger()->error('Action result not found in value container.');
         }
 
         return $response;

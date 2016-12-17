@@ -15,9 +15,12 @@ use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoder;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ArrayEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
 use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use Pimple\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 class ActionResultEncoderTest extends TestCase
 {
@@ -41,13 +44,21 @@ class ActionResultEncoderTest extends TestCase
         $this->assertInstanceOf(ActionResultContainerInterface::class, (new ActionResultEncoder($this->action_result_container))->getActionResultContainer());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Action result not found in the container.
-     */
-    public function testExceptionWhenActionResultIsNotFoundInRequest()
+    public function testLogWhenActionResultIsNotFoundInRequest()
     {
-        call_user_func(new ActionResultEncoder($this->action_result_container), $this->createRequest(), $this->createResponse());
+        $log_handler = new TestHandler();
+        $logger = new Logger('Test', [$log_handler]);
+
+        $action_result_encoder = new ActionResultEncoder($this->action_result_container);
+        $action_result_encoder->setLogger($logger);
+        $this->assertInstanceOf(LoggerInterface::class, $action_result_encoder->getLogger());
+
+        call_user_func($action_result_encoder, $this->createRequest(), $this->createResponse());
+
+        $this->assertCount(1, $log_handler->getRecords());
+
+        $this->assertSame('Action result not found in value container.', $log_handler->getRecords()[0]['message']);
+        $this->assertSame('ERROR', $log_handler->getRecords()[0]['level_name']);
     }
 
     /**
