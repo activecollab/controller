@@ -44,17 +44,78 @@ class ScalarEncoderTest extends TestCase
         $this->assertTrue((new ScalarEncoder())->shouldEncode('Test string'));
     }
 
-    public function testEncodeScalar()
+    /**
+     * @dataProvider provideScalars
+     * @param mixed $to_encode
+     * @param string $expected_encoded_value
+     */
+    public function testEncodeScalar($to_encode, $expected_encoded_value)
     {
         $response = $this->createResponse();
 
-        $to_encode = 'Test string';
-
-        $response = (new ScalarEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), $to_encode);
+        $response = (new ScalarEncoder())
+            ->encode($response, new ActionResultEncoder($this->action_result_container), $to_encode);
 
         $response_body = (string) $response->getBody();
 
         $this->assertInternalType('string', $response_body);
-        $this->assertSame('Test string', $response_body);
+        $this->assertSame($expected_encoded_value, $response_body);
+
+        $decoded_body = json_decode($response_body, true);
+        $this->assertInternalType(gettype($to_encode), $decoded_body);
+    }
+
+    public function provideScalars()
+    {
+        return [
+            ['Test string', '"Test string"'],
+            [1, '1'],
+            [false, 'false'],
+            [true, 'true'],
+            [0.12, '0.12'],
+            [1.0, '1.0'],
+            [0.1234567890, '0.123457'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideFloats
+     * @param float  $to_encode
+     * @param int    $float_precision
+     * @param string $expected_encoded_value
+     */
+    public function testFloatPrecisionCanBeSpecified(float $to_encode, int $float_precision, string $expected_encoded_value)
+    {
+        $response = $this->createResponse();
+
+        $response = (new ScalarEncoder($float_precision))
+            ->encode($response, new ActionResultEncoder($this->action_result_container), $to_encode);
+
+        $response_body = (string) $response->getBody();
+
+        $this->assertInternalType('string', $response_body);
+        $this->assertSame($expected_encoded_value, $response_body);
+    }
+
+    public function provideFloats()
+    {
+        return [
+            [0.12, 6, '0.12'],
+            [1.0, 6, '1.0'],
+            [0.1234567890, 6, '0.123457'],
+            [0.1234567890, 4, '0.1235'],
+            [0.1234567890, 3, '0.123'],
+        ];
+    }
+
+    /**
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Scalar encoder can encode only scalars.
+     */
+    public function testNonScalarValuesThrowException()
+    {
+        $response = $this->createResponse();
+
+        (new ScalarEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), [1, 2, 3]);
     }
 }
