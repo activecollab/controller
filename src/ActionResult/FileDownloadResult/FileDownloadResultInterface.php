@@ -21,4 +21,8 @@ interface FileDownloadResultInterface extends ActionResultInterface
     public function isInline(): bool;
 
     public function getXType(): string;
+
+    public function addCustomHeader($name, $value);
+
+    public function getCustomHeaders(): array;
 }
