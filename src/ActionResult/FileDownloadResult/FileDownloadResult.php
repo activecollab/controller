@@ -12,6 +12,7 @@ namespace ActiveCollab\Controller\ActionResult\FileDownloadResult;
 
 use ActiveCollab\Controller\ActionResult\ActionResultInterface;
 use InvalidArgumentException;
+use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 class FileDownloadResult implements ActionResultInterface, FileDownloadResultInterface
@@ -25,6 +26,8 @@ class FileDownloadResult implements ActionResultInterface, FileDownloadResultInt
     private $is_inline;
 
     private $x_type;
+
+    private $custom_headers = [];
 
     public function __construct(string $file_path, string $content_type, bool $is_inline = false, string $file_name = '', string $x_type = '')
     {
@@ -76,5 +79,15 @@ class FileDownloadResult implements ActionResultInterface, FileDownloadResultInt
     public function getXType(): string
     {
         return $this->x_type;
+    }
+
+    public function addCustomHeader($name, $value)
+    {
+        $this->custom_headers[$name] = $value;
+    }
+
+    public function getCustomHeaders(): array
+    {
+        return $this->custom_headers;
     }
 }

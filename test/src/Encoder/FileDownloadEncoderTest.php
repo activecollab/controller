@@ -48,6 +48,7 @@ class FileDownloadEncoderTest extends TestCase
         $response = $this->createResponse()->withHeader('X-Test', 'yes');
 
         $file_download = new FileDownloadResult(__FILE__, 'text/php');
+        $file_download->addCustomHeader('x-autoupgrade-package-hash', md5_file(__FILE__));
 
         $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);
@@ -79,6 +80,9 @@ class FileDownloadEncoderTest extends TestCase
 
         $this->assertArrayHasKey('Pragma', $headers);
         $this->assertSame('public', $headers['Pragma'][0]);
+
+        $this->assertArrayHasKey('x-autoupgrade-package-hash', $headers);
+        $this->assertSame(md5_file(__FILE__), $headers['x-autoupgrade-package-hash'][0]);
     }
 
     public function testInlineFileDownloadEncoder()

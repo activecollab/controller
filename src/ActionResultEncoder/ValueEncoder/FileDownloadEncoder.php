@@ -57,6 +57,12 @@ class FileDownloadEncoder extends ValueEncoder
             $response = $response->withHeader('X-Type', $value->getXType());
         }
 
+        if (!empty($value->getCustomHeaders())) {
+            foreach ($value->getCustomHeaders() as $name => $value) {
+                $response = $response->withHeader($name, $value);
+            }
+        }
+
         return $response->withBody($stream);
     }
 }
