@@ -41,8 +41,9 @@ class FileDownloadResponse implements ResponseInterface
      * @var string|null
      */
     private $x_type;
+
     /**
-     * @var null
+     * @var string|null
      */
     private $x_accel_redirect_to;
 
@@ -71,9 +72,8 @@ class FileDownloadResponse implements ResponseInterface
     public function createPsrResponse()
     {
         $response = new Response();
-        $disposition = $this->inline ? 'inline' : 'attachment';
-
         $filename = $this->filename ?: basename($this->file);
+        $disposition = $this->inline ? 'inline' : 'attachment';
 
         if (!empty($this->x_accel_redirect_to)) {
             $response = $response
