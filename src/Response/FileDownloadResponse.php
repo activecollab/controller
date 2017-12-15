@@ -43,13 +43,19 @@ class FileDownloadResponse implements ResponseInterface
     private $x_type;
 
     /**
+     * @var string|null
+     */
+    private $x_accel_redirect_to;
+
+    /**
      * @param string      $file
      * @param string      $content_type
      * @param bool        $inline
      * @param string      $filename
      * @param string|null $x_type
+     * @param string|null $x_accel_redirect_to
      */
-    public function __construct($file, $content_type, $inline = false, $filename = null, $x_type = null)
+    public function __construct($file, $content_type, $inline = false, $filename = null, $x_type = null, $x_accel_redirect_to = null)
     {
         if (!is_file($file)) {
             throw new RuntimeException('Download file not found');
@@ -60,14 +66,24 @@ class FileDownloadResponse implements ResponseInterface
         $this->inline = $inline;
         $this->filename = $filename;
         $this->x_type = $x_type;
+        $this->x_accel_redirect_to = $x_accel_redirect_to;
     }
 
     public function createPsrResponse()
     {
+        $response = new Response();
         $filename = $this->filename ?: basename($this->file);
         $disposition = $this->inline ? 'inline' : 'attachment';
 
-        $response = new Response();
+        if (!empty($this->x_accel_redirect_to)) {
+            $response = $response
+                ->withHeader('Content-Disposition', $disposition . '; filename="' . $filename . '"')
+                ->withHeader('Content-Length',  filesize($this->file))
+                ->withHeader('X-Accel-Redirect', $this->x_accel_redirect_to . $filename);
+
+            return $response;
+        }
+
         $stream = new Stream(fopen($this->file, 'rb'));
 
         /** @var Response $response */
