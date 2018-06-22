@@ -40,16 +40,29 @@ class FileDownloadResponse implements ResponseInterface
     /**
      * @var string|null
      */
+    private $cache_hash;
+
+    /**
+     * @var string|null
+     */
     private $x_type;
 
     /**
      * @param string      $file
      * @param string      $content_type
      * @param bool        $inline
-     * @param string      $filename
+     * @param string|null $filename
+     * @param string|null $cache_hash
      * @param string|null $x_type
      */
-    public function __construct($file, $content_type, $inline = false, $filename = null, $x_type = null)
+    public function __construct(
+        $file,
+        $content_type,
+        $inline = false,
+        $filename = null,
+        $cache_hash = null,
+        $x_type = null
+    )
     {
         if (!is_file($file)) {
             throw new RuntimeException('Download file not found');
@@ -59,6 +72,7 @@ class FileDownloadResponse implements ResponseInterface
         $this->content_type = $content_type;
         $this->inline = $inline;
         $this->filename = $filename;
+        $this->cache_hash = $cache_hash;
         $this->x_type = $x_type;
     }
 
@@ -80,6 +94,15 @@ class FileDownloadResponse implements ResponseInterface
             ->withHeader('Expires', '0')
             ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
             ->withHeader('Pragma', 'public');
+
+        if ($this->cache_hash) {
+            $response = $response->withHeader('Etag', '"' . trim($this->cache_hash, '"\'') . '"');
+        } else {
+            $response = $response
+                ->withHeader('Expires', '0')
+                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                ->withHeader('Pragma', 'public');
+        }
 
         if ($this->x_type) {
             $response = $response->withHeader('X-Type', $this->x_type);
