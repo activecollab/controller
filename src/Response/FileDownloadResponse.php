@@ -113,7 +113,10 @@ class FileDownloadResponse implements ResponseInterface
             ->withHeader('Pragma', 'public');
 
         if ($this->cache_hash) {
-            $response = $response->withHeader('Etag', '"' . trim($this->cache_hash, '"\'') . '"');
+            $response = $response
+                ->withHeader('Expires', gmdate('D, d M Y H:i:s', (time() + 315360000)) . ' GMT')
+                ->withHeader('Cache-Control', 'public, max-age=0')
+                ->withHeader('Etag', '"' . trim($this->cache_hash, '"') . '"');
         } else {
             $response = $response
                 ->withHeader('Expires', '0')
