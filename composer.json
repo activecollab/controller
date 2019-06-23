@@ -6,7 +6,6 @@
     ],
     "license": "MIT",
     "type": "library",
-    "min-stability": "stable",
     "require": {
         "php": ">=7.1",
         "activecollab/containeraccess": "^1.0",
