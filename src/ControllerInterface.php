@@ -8,7 +8,10 @@
 
 namespace ActiveCollab\Controller;
 
-use ActiveCollab\Controller\ResultEncoder\ResultEncoderInterface;
+use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
+use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -16,74 +19,33 @@ use Psr\Log\LoggerInterface;
  */
 interface ControllerInterface
 {
-    /**
-     * Return action result encoder.
-     *
-     * @return ResultEncoderInterface
-     */
-    public function getResultEncoder();
+    public function __before(ServerRequestInterface $request);
 
-    /**
-     * Set action result encoder.
-     *
-     * @param  ResultEncoderInterface $result_encoder
-     * @return $this
-     */
-    public function &setResultEncoder(ResultEncoderInterface $result_encoder);
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface;
 
-    /**
-     * Return logger.
-     *
-     * @return LoggerInterface|null
-     */
+    public function getControllerName(): string;
+
+    public function getActionNameResolver(): ActionNameResolverInterface;
+
+    public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver): ControllerInterface;
+
+    public function getActionResultContainer(): ActionResultContainerInterface;
+
+    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ControllerInterface;
+
     public function getLogger();
 
-    /**
-     * Set logger.
-     *
-     * @param  LoggerInterface|null $logger
-     * @return $this
-     */
-    public function &setLogger(LoggerInterface $logger = null);
+    public function &setLogger(LoggerInterface $logger = null): ControllerInterface;
 
-    /**
-     * Return message that is returned as 500 error when action breaks due to an exception.
-     *
-     * @return string
-     */
-    public function getClientFacingExceptionMessage();
+    public function getClientSafeExceptionMessage(): string;
 
-    /**
-     * Set message that is returned as 500 error when action breaks due to exception.
-     *
-     * If you wish to include actual exception's message, add {message} to the test. Example:
-     *
-     * $controller->setActionExceptionMessage('Failed because {message}');
-     *
-     * @param  string $message
-     * @return $this
-     */
-    public function &setClientFacingExceptionMessage($message);
+    public function &setClientSafeExceptionMessage(string $message): ControllerInterface;
 
-    /**
-     * Return message that will be logged if contraoller action fails due to an exception.
-     *
-     * @return string
-     */
-    public function getLogExceptionMessage();
+    public function getLogExceptionMessage(): string;
 
-    /**
-     * Set message that will be logged if contraoller action fails due to an exception.
-     *
-     * @param  string $message
-     * @return $this
-     */
-    public function &setLogExceptionMessage($message);
+    public function &setLogExceptionMessage(string $message): ControllerInterface;
 
-    /**
-     * Return controller name, without namespace.
-     *
-     * @return string
-     */
-    public function getControllerName();
+    public function getLogPhpErrorMessage(): string;
+
+    public function &setLogPhpErrorMessage(string $message): ControllerInterface;
 }

@@ -1,0 +1,1 @@
+<h1>Welcome <?= (isset($first_name) ? $first_name : 'Anonymous') ?></h1>

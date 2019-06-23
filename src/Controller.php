@@ -6,163 +6,112 @@
  * (c) A51 doo <info@activecollab.com>. All rights reserved.
  */
 
+declare(strict_types=1);
+
 namespace ActiveCollab\Controller;
 
 use ActiveCollab\ContainerAccess\ContainerAccessInterface;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as ContainerAccessInterfaceImplementation;
+use ActiveCollab\Controller\ActionNameResolver\ActionNameResolverInterface;
+use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResult;
+use ActiveCollab\Controller\ActionResult\MovedResult\MovedResultInterface;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
+use ActiveCollab\Controller\ActionResult\StatusResult\StatusResultInterface;
+use ActiveCollab\Controller\CommonResults\CommonResultsInterface;
 use ActiveCollab\Controller\Exception\ActionForMethodNotFound;
 use ActiveCollab\Controller\Exception\ActionNotFound;
-use ActiveCollab\Controller\Response\StatusResponse;
-use ActiveCollab\Controller\ResultEncoder\ResultEncoderInterface;
+use ActiveCollab\Controller\RequestParamGetter\RequestParamGetterInterface;
 use Exception;
-use Interop\Container\ContainerInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Throwable;
 
 /**
  * @package ActiveCollab\Controller
  */
-abstract class Controller implements ContainerAccessInterface, ControllerInterface
+abstract class Controller implements ContainerAccessInterface, ControllerInterface, RequestParamGetterInterface, CommonResultsInterface
 {
     use ContainerAccessInterfaceImplementation;
 
-    /**
-     * @var ResultEncoderInterface
-     */
-    private $result_encoder;
+    private $action_name_resolver;
 
     /**
-     * @var LoggerInterface
+     * @var ActionResultContainerInterface
      */
+    private $action_result_container;
+
     private $logger;
 
-    /**
-     * @var string
-     */
-    private $action_exception_message = 'Whoops, something went wrong...';
+    private $client_safe_exception_message = 'Whoops, something went wrong...';
 
-    /**
-     * @var string
-     */
-    private $log_exception_message = 'Controller action aborted with an exception';
+    private $log_exception_message = 'Controller action aborted due to an exception.';
 
-    /**
-     * @param ContainerInterface     $container
-     * @param ResultEncoderInterface $result_encoder
-     * @param LoggerInterface|null   $logger
-     */
-    public function __construct(ContainerInterface &$container, ResultEncoderInterface &$result_encoder, LoggerInterface $logger = null)
+    private $log_php_error_message = 'Controller action aborted due to a PHP error.';
+
+    public function __construct(ActionNameResolverInterface $action_name_resolver, ActionResultContainerInterface $action_result_container, LoggerInterface $logger = null)
     {
-        $this->setContainer($container);
-        $this->setResultEncoder($result_encoder);
+        $this->setActionNameResolver($action_name_resolver);
+        $this->setActionResultContainer($action_result_container);
         $this->setLogger($logger);
+
+        $this->configure();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getResultEncoder()
+    protected function configure(): void
     {
-        return $this->result_encoder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function &setResultEncoder(ResultEncoderInterface $result_encoder)
+    public function __before(ServerRequestInterface $request)
     {
-        $this->result_encoder = $result_encoder;
-
-        return $this;
+        return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLogger()
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
-        return $this->logger;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function &setLogger(LoggerInterface $logger = null)
-    {
-        $this->logger = $logger;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getClientFacingExceptionMessage()
-    {
-        return $this->action_exception_message;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function &setClientFacingExceptionMessage($message)
-    {
-        if (empty($message)) {
-            throw new InvalidArgumentException("Client facing exception message can't be empty");
+        try {
+            $action_name = $this->getActionNameResolver()->getActionName($request);
+        } catch (RuntimeException $e) {
+            throw new ActionForMethodNotFound($request->getMethod(), $request->getUri()->getPath(), $e);
         }
 
-        $this->action_exception_message = $message;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLogExceptionMessage()
-    {
-        return $this->log_exception_message;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function &setLogExceptionMessage($message)
-    {
-        if (empty($message)) {
-            throw new InvalidArgumentException("Log exception message can't be empty");
+        if (empty($action_name)) {
+            throw new ActionForMethodNotFound($request->getMethod(), $request->getUri()->getPath());
         }
 
-        $this->log_exception_message = $message;
+        if (!method_exists($this, $action_name)) {
+            throw new ActionNotFound(get_class($this), $action_name);
+        }
 
-        return $this;
+        // Run __before() method prior to running the action.
+        $action_result = $this->__before($request);
+
+        // If __before() did not exist with a status response, call the action.
+        if ($action_result === null) {
+            try {
+                $action_result = call_user_func([&$this, $action_name], $request);
+            } catch (Exception $exception) {
+                $action_result = $this->handleException($exception);
+            } catch (Throwable $php_error) {
+                $action_result = $this->handlePhpError($php_error);
+            }
+        }
+
+        $this->getActionResultContainer()->setValue($action_result);
+
+        if ($next) {
+            $response = $next($request, $response);
+        }
+
+        return $response;
     }
 
-    /**
-     * Run before every action.
-     *
-     * @param  ServerRequestInterface $request
-     * @param  array                  $arguments
-     * @return StatusResponse|void
-     */
-    protected function __before(ServerRequestInterface $request, array $arguments)
-    {
-    }
-
-    /**
-     * @var string
-     */
     private $controller_name;
 
-    /**
-     * Return controller name, without namespace.
-     *
-     * @return string
-     */
-    public function getControllerName()
+    public function getControllerName(): string
     {
         if (empty($this->controller_name)) {
             $controller_class = get_class($this);
@@ -177,57 +126,128 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this->controller_name;
     }
 
-    /**
-     * @param  ServerRequestInterface $request
-     * @param  ResponseInterface      $response
-     * @param  array                  $arguments
-     * @return ResponseInterface
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $arguments = [])
+    public function getActionNameResolver(): ActionNameResolverInterface
     {
-        if ($action = $request->getAttribute('route')->getArgument($request->getMethod() . '_action')) {
-            if (method_exists($this, $action)) {
-                $before_result = $this->__before($request, $arguments);
-
-                if ($before_result instanceof StatusResponse) {
-                    return $this->getResultEncoder()->encode($before_result, $request, $response);
-                } else {
-                    try {
-                        return $this->getResultEncoder()->encode(call_user_func([&$this, $action], $request, $arguments), $request, $response);
-                    } catch (Exception $e) {
-                        if ($this->logger) {
-                            $this->logger->error($this->getLogExceptionMessage(), ['exception' => $e]);
-                        }
-
-                        $exception_message = $this->action_exception_message;
-
-                        if (strpos($exception_message, '{message}') !== false) {
-                            $exception_message = str_replace('{message}', $e->getMessage(), $exception_message);
-                        }
-
-                        return $this->getResultEncoder()->encode(new RuntimeException($exception_message, 0, $e), $request, $response);
-                    }
-                }
-            } else {
-                throw new ActionNotFound(get_class($this), $action);
-            }
-        } else {
-            throw new ActionForMethodNotFound($request->getMethod());
-        }
+        return $this->action_name_resolver;
     }
 
-    /**
-     * Return a param from a parsed body.
-     *
-     * This method is NULL or object safe - it will check for body type, and do it's best to return a value without
-     * breaking or throwing a warning.
-     *
-     * @param  ServerRequestInterface $request
-     * @param                         $param_name
-     * @param  null                   $default
-     * @return mixed|null
-     */
-    protected function getParsedBodyParam(ServerRequestInterface $request, $param_name, $default = null)
+    public function &setActionNameResolver(ActionNameResolverInterface $action_name_resolver): ControllerInterface
+    {
+        $this->action_name_resolver = $action_name_resolver;
+
+        return $this;
+    }
+
+    public function getActionResultContainer(): ActionResultContainerInterface
+    {
+        return $this->action_result_container;
+    }
+
+    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ControllerInterface
+    {
+        $this->action_result_container = $action_result_container;
+
+        return $this;
+    }
+
+    public function getLogger(): ? LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    public function &setLogger(LoggerInterface $logger = null) : ControllerInterface
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function getClientSafeExceptionMessage(): string
+    {
+        return $this->client_safe_exception_message;
+    }
+
+    public function &setClientSafeExceptionMessage(string $message): ControllerInterface
+    {
+        if (empty($message)) {
+            throw new InvalidArgumentException("Client safe exception message can't be empty.");
+        }
+
+        $this->client_safe_exception_message = $message;
+
+        return $this;
+    }
+
+    public function getLogExceptionMessage(): string
+    {
+        return $this->log_exception_message;
+    }
+
+    public function &setLogExceptionMessage(string $message): ControllerInterface
+    {
+        if (empty($message)) {
+            throw new InvalidArgumentException("Log exception message can't be empty.");
+        }
+
+        $this->log_exception_message = $message;
+
+        return $this;
+    }
+
+    public function getLogPhpErrorMessage(): string
+    {
+        return $this->log_php_error_message;
+    }
+
+    public function &setLogPhpErrorMessage(string $message): ControllerInterface
+    {
+        if (empty($message)) {
+            throw new InvalidArgumentException("Log PHP error message can't be empty.");
+        }
+
+        $this->log_php_error_message = $message;
+
+        return $this;
+    }
+
+    private function handleException(Exception $exception): Exception
+    {
+        if ($this->getLogger()) {
+            $this->getLogger()->error($this->getLogExceptionMessage(), [
+                'exception' => $exception,
+            ]);
+        }
+
+        $exception_message = $this->prepareClientSafeErrorMessage($exception);
+
+        return new RuntimeException($exception_message, 0, $exception);
+    }
+
+    private function handlePhpError(Throwable $php_error): Exception
+    {
+        if ($this->getLogger()) {
+            $this->getLogger()->error($this->getLogPhpErrorMessage(), [
+                'exception' => $php_error,
+            ]);
+        }
+
+        $exception_message = $this->prepareClientSafeErrorMessage($php_error);
+
+        return new RuntimeException($exception_message, 0, $php_error);
+    }
+
+    private function prepareClientSafeErrorMessage(Throwable $error): string
+    {
+        $exception_message = $this->getClientSafeExceptionMessage();
+
+        if (strpos($exception_message, '{message}') !== false) {
+            $exception_message = str_replace('{message}', $error->getMessage(), $exception_message);
+        }
+
+        return $exception_message;
+    }
+
+    public function getParsedBodyParam(ServerRequestInterface $request, string $param_name, $default = null)
     {
         $parsed_body = $request->getParsedBody();
 
@@ -242,36 +262,53 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $default;
     }
 
-    /**
-     * @param  ServerRequestInterface $request
-     * @param  string                 $param_name
-     * @param  mixed                  $default
-     * @return mixed
-     */
-    protected function getCookieParam(ServerRequestInterface $request, $param_name, $default = null)
+    public function getCookieParam(ServerRequestInterface $request, string $param_name, $default = null)
     {
         return array_key_exists($param_name, $request->getCookieParams()) ? $request->getCookieParams()[$param_name] : $default;
     }
 
-    /**
-     * @param  ServerRequestInterface $request
-     * @param  string                 $param_name
-     * @param  mixed                  $default
-     * @return mixed
-     */
-    protected function getQueryParam(ServerRequestInterface $request, $param_name, $default = null)
+    public function getQueryParam(ServerRequestInterface $request, $param_name, $default = null)
     {
         return array_key_exists($param_name, $request->getQueryParams()) ? $request->getQueryParams()[$param_name] : $default;
     }
 
-    /**
-     * @param  ServerRequestInterface $request
-     * @param  string                 $param_name
-     * @param  mixed                  $default
-     * @return mixed
-     */
-    protected function getServerParam(ServerRequestInterface $request, $param_name, $default = null)
+    public function getServerParam(ServerRequestInterface $request, string $param_name, $default = null)
     {
         return array_key_exists($param_name, $request->getServerParams()) ? $request->getServerParams()[$param_name] : $default;
+    }
+
+    public function ok(string $message = ''): StatusResultInterface
+    {
+        return new StatusResult(200, $message);
+    }
+
+    public function created($payload = null): StatusResultInterface
+    {
+        return new StatusResult(201, '', $payload);
+    }
+
+    public function badRequest(string $message = ''): StatusResultInterface
+    {
+        return new StatusResult(400, $message);
+    }
+
+    public function forbidden(string $message = ''): StatusResultInterface
+    {
+        return new StatusResult(403, $message);
+    }
+
+    public function notFound(string $message = ''): StatusResultInterface
+    {
+        return new StatusResult(404, $message);
+    }
+
+    public function conflict(string $message = ''): StatusResultInterface
+    {
+        return new StatusResult(409, $message);
+    }
+
+    public function moved(string $url, bool $is_moved_permanently = false): MovedResultInterface
+    {
+        return new MovedResult($url, $is_moved_permanently);
     }
 }
