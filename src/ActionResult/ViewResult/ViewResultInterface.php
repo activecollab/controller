@@ -15,8 +15,6 @@ use ActiveCollab\Controller\ActionResult\ActionResultInterface;
 interface ViewResultInterface extends ActionResultInterface
 {
     public function getContentType(): string;
-
     public function getEncoding(): string;
-
     public function fetch(): string;
 }

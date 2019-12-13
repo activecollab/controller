@@ -40,7 +40,10 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
      */
     private $value_encoders = [];
 
-    public function __construct(ActionResultContainerInterface $action_result_container, ValueEncoderInterface ...$value_encoders)
+    public function __construct(
+        ActionResultContainerInterface $action_result_container,
+        ValueEncoderInterface ...$value_encoders
+    )
     {
         $this->setActionResultContainer($action_result_container);
         $this->addValueEncoder(...$value_encoders);
@@ -51,7 +54,9 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         return $this->action_result_container;
     }
 
-    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ActionResultEncoderInterface
+    public function &setActionResultContainer(
+        ActionResultContainerInterface $action_result_container
+    ): ActionResultEncoderInterface
     {
         $this->action_result_container = $action_result_container;
 
@@ -94,7 +99,11 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         return $this;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        callable $next = null
+    ): ResponseInterface
     {
         if (!$this->getEncodeOnExit()) {
             $response = $this->tryToEncodeValue($response, $this->action_result_container);
@@ -111,7 +120,10 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         return $response;
     }
 
-    private function tryToEncodeValue(ResponseInterface $response, ActionResultContainerInterface $action_result_container)
+    private function tryToEncodeValue(
+        ResponseInterface $response,
+        ActionResultContainerInterface $action_result_container
+    )
     {
         if ($action_result_container->hasValue()) {
             $response = $this->encode($response, $this->action_result_container->getValue());
@@ -130,7 +142,9 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
             }
         }
 
-        throw new RuntimeException("No matching encoder for value of {$this->getValueType($value)} type found.");
+        throw new RuntimeException(
+            sprintf('No matching encoder for value of %s type found.', $this->getValueType($value))
+        );
     }
 
     private function getValueType($value): string

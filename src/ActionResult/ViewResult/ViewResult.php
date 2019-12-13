@@ -15,16 +15,18 @@ use ActiveCollab\TemplateEngine\TemplateEngineInterface;
 class ViewResult implements ViewResultInterface
 {
     private $template_engine;
-
     private $template;
-
     private $template_data;
-
     private $content_type = 'text/html';
-
     private $encoding = 'UTF-8';
 
-    public function __construct(TemplateEngineInterface $template_engine, string $template, array $data = [], string $content_type = 'text/html', string $encoding = 'UTF-8')
+    public function __construct(
+        TemplateEngineInterface $template_engine,
+        string $template,
+        array $data = [],
+        string $content_type = 'text/html',
+        string $encoding = 'UTF-8'
+    )
     {
         $this->template_engine = $template_engine;
         $this->template = $template;

@@ -8,6 +8,7 @@
     "type": "library",
     "require": {
         "php": ">=7.1",
+        "ext-json": "*",
         "activecollab/containeraccess": "^1.0",
         "activecollab/etag": "^1.0",
         "activecollab/templateengine": "^1.0",
@@ -16,7 +17,7 @@
         "psr/log": "~1.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^1.0",
+        "friendsofphp/php-cs-fixer": "^2.0",
         "monolog/monolog": "^1.0",
         "pimple/pimple": "^3.0",
         "phpunit/phpunit": "^5.0",

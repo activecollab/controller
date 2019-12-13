@@ -18,18 +18,16 @@ use Psr\Http\Message\ServerRequestInterface;
 interface ActionResultEncoderInterface
 {
     public function getActionResultContainer(): ActionResultContainerInterface;
-
-    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ActionResultEncoderInterface;
-
+    public function &setActionResultContainer(
+        ActionResultContainerInterface $action_result_container
+    ): ActionResultEncoderInterface;
     public function getEncodeOnExit(): bool;
-
     public function &setEncodeOnExit(bool $value = true): ActionResultEncoderInterface;
-
     public function getValueEncoders(): array;
-
     public function &addValueEncoder(ValueEncoderInterface ...$value_encoders): ActionResultEncoderInterface;
-
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface;
-
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response, callable $next = null
+    ): ResponseInterface;
     public function encode(ResponseInterface $response, $value): ResponseInterface;
 }
