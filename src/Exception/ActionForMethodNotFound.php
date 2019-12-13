@@ -11,16 +11,8 @@ namespace ActiveCollab\Controller\Exception;
 use Exception;
 use RuntimeException;
 
-/**
- * @package ActiveCollab\Id\Controller\Exception
- */
 class ActionForMethodNotFound extends RuntimeException
 {
-    /**
-     * @param string         $method
-     * @param string         $path
-     * @param Exception|null $previous
-     */
     public function __construct(string $method, string $path, Exception $previous = null)
     {
         parent::__construct("Action for {$method} {$path} not found.", 0, $previous);

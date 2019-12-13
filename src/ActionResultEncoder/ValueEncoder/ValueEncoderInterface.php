@@ -16,6 +16,9 @@ use Psr\Http\Message\ResponseInterface;
 interface ValueEncoderInterface
 {
     public function shouldEncode($value): bool;
-
-    public function encode(ResponseInterface $response, ActionResultEncoderInterface $encoder, $value): ResponseInterface;
+    public function encode(
+        ResponseInterface $response,
+        ActionResultEncoderInterface $encoder,
+        $value
+    ): ResponseInterface;
 }

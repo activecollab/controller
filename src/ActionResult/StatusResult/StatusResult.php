@@ -20,7 +20,11 @@ class StatusResult implements StatusResultInterface
 
     private $payload;
 
-    public function __construct(int $status_code, string $message = '', $payload = null)
+    public function __construct(
+        int $status_code,
+        string $message = '',
+        $payload = null
+    )
     {
         if ($payload instanceof StatusResultInterface) {
             throw new LogicException('Status response is not an acceptible payload.');

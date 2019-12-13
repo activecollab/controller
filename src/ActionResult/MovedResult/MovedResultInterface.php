@@ -11,6 +11,5 @@ namespace ActiveCollab\Controller\ActionResult\MovedResult;
 interface MovedResultInterface
 {
     public function getUrl(): string;
-
     public function isMovedPermanently(): bool;
 }

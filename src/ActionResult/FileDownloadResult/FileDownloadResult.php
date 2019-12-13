@@ -12,7 +12,6 @@ namespace ActiveCollab\Controller\ActionResult\FileDownloadResult;
 
 use ActiveCollab\Controller\ActionResult\ActionResultInterface;
 use InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 class FileDownloadResult implements ActionResultInterface, FileDownloadResultInterface
@@ -29,7 +28,13 @@ class FileDownloadResult implements ActionResultInterface, FileDownloadResultInt
 
     private $custom_headers = [];
 
-    public function __construct(string $file_path, string $content_type, bool $is_inline = false, string $file_name = '', string $x_type = '')
+    public function __construct(
+        string $file_path,
+        string $content_type,
+        bool $is_inline = false,
+        string $file_name = '',
+        string $x_type = ''
+    )
     {
         if (empty($file_path)) {
             throw new InvalidArgumentException('File path is required.');

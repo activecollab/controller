@@ -15,8 +15,6 @@ use ActiveCollab\Controller\ActionResult\ActionResultInterface;
 interface StatusResultInterface extends ActionResultInterface
 {
     public function getStatusCode(): int;
-
     public function getMessage(): string;
-
     public function getPayload();
 }

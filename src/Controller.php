@@ -70,7 +70,10 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return null;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response, callable $next = null
+    ): ResponseInterface
     {
         try {
             $action_name = $this->getActionNameResolver()->getActionName($request);
@@ -143,7 +146,9 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this->action_result_container;
     }
 
-    public function &setActionResultContainer(ActionResultContainerInterface $action_result_container): ControllerInterface
+    public function &setActionResultContainer(
+        ActionResultContainerInterface $action_result_container
+    ): ControllerInterface
     {
         $this->action_result_container = $action_result_container;
 
@@ -155,7 +160,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this->logger;
     }
 
-    public function &setLogger(LoggerInterface $logger = null) : ControllerInterface
+    public function &setLogger(LoggerInterface $logger = null): ControllerInterface
     {
         $this->logger = $logger;
 
@@ -264,17 +269,23 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     public function getCookieParam(ServerRequestInterface $request, string $param_name, $default = null)
     {
-        return array_key_exists($param_name, $request->getCookieParams()) ? $request->getCookieParams()[$param_name] : $default;
+        return array_key_exists($param_name, $request->getCookieParams())
+            ? $request->getCookieParams()[$param_name]
+            : $default;
     }
 
     public function getQueryParam(ServerRequestInterface $request, $param_name, $default = null)
     {
-        return array_key_exists($param_name, $request->getQueryParams()) ? $request->getQueryParams()[$param_name] : $default;
+        return array_key_exists($param_name, $request->getQueryParams())
+            ? $request->getQueryParams()[$param_name]
+            : $default;
     }
 
     public function getServerParam(ServerRequestInterface $request, string $param_name, $default = null)
     {
-        return array_key_exists($param_name, $request->getServerParams()) ? $request->getServerParams()[$param_name] : $default;
+        return array_key_exists($param_name, $request->getServerParams())
+            ? $request->getServerParams()[$param_name]
+            : $default;
     }
 
     public function ok(string $message = ''): StatusResultInterface
