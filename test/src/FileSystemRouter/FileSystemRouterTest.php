@@ -25,6 +25,14 @@ class FileSystemRouterTest extends TestCase
         $this->assertDirectoryExists($this->blog_example_dir);
     }
 
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Path "not a directory" is not a directory.
+     */
+    public function testWillThrowExceptionOnMissingDir()
+    {
+        (new FileSystemRouter())->scan('not a directory');
+    }
 
     public function testWillWalkRecursivelyThrougDir(): void
     {
