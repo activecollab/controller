@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d64bd36c29a51160bd9ec2aed9f122a9",
+    "content-hash": "b639730541de98a7b199e23f883f644e",
     "packages": [
         {
             "name": "activecollab/containeraccess",
@@ -100,24 +100,24 @@
         },
         {
             "name": "activecollab/templateengine",
-            "version": "1.0.1",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/activecollab/templateengine.git",
-                "reference": "a0fb6171a5949500985df574135551a0bce78766"
+                "reference": "26c07477e82253f29134c2065e7178a39c1d8f41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/activecollab/templateengine/zipball/a0fb6171a5949500985df574135551a0bce78766",
-                "reference": "a0fb6171a5949500985df574135551a0bce78766",
+                "url": "https://api.github.com/repos/activecollab/templateengine/zipball/26c07477e82253f29134c2065e7178a39c1d8f41",
+                "reference": "26c07477e82253f29134c2065e7178a39c1d8f41",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0"
+                "php": ">=7.3"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "^1.0",
-                "phpunit/phpunit": "^5.0"
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "phpunit/phpunit": "^7.0"
             },
             "type": "library",
             "autoload": {
@@ -135,7 +135,7 @@
                 "template",
                 "view"
             ],
-            "time": "2016-05-22T11:42:16+00:00"
+            "time": "2019-12-23T23:01:45+00:00"
         },
         {
             "name": "activecollab/utils",
@@ -1209,16 +1209,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.10.0",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "d638ebbb58daba25a6a0dc7969e1358a0e3c6682"
+                "reference": "cbe1df668b3fe136bcc909126a0f529a78d4cbbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/d638ebbb58daba25a6a0dc7969e1358a0e3c6682",
-                "reference": "d638ebbb58daba25a6a0dc7969e1358a0e3c6682",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/cbe1df668b3fe136bcc909126a0f529a78d4cbbc",
+                "reference": "cbe1df668b3fe136bcc909126a0f529a78d4cbbc",
                 "shasum": ""
             },
             "require": {
@@ -1268,7 +1268,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2019-12-17T16:54:23+00:00"
+            "time": "2019-12-22T21:05:45+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
