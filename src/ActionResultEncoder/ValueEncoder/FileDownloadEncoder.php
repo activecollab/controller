@@ -13,7 +13,7 @@ namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 use ActiveCollab\Controller\ActionResult\FileDownloadResult\FileDownloadResultInterface;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Stream;
+use Zend\Diactoros\Stream;
 
 class FileDownloadEncoder extends ValueEncoder
 {

@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
 use Psr\Http\Message\StreamInterface;
-use Slim\Http\Stream;
+use Zend\Diactoros\Stream;
 
 abstract class ValueEncoder implements ValueEncoderInterface
 {
