@@ -16,6 +16,7 @@ use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ScalarEncoder;
 use ActiveCollab\Controller\Test\Base\TestCase;
 use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
 use ActiveCollab\Controller\Test\Fixtures\ArrayAsJson;
+use LogicException;
 use Pimple\Container;
 
 class ScalarEncoderTest extends TestCase
@@ -27,7 +28,7 @@ class ScalarEncoderTest extends TestCase
      */
     private $action_result_container;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -108,12 +109,11 @@ class ScalarEncoderTest extends TestCase
         ];
     }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Scalar encoder can encode only scalars.
-     */
     public function testNonScalarValuesThrowException()
     {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage("Scalar encoder can encode only scalars.");
+
         $response = $this->createResponse();
 
         (new ScalarEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), [1, 2, 3]);

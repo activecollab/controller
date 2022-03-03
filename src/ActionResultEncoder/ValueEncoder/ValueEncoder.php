@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
+use Laminas\Diactoros\Stream;
 use Psr\Http\Message\StreamInterface;
-use Zend\Diactoros\Stream;
 
 abstract class ValueEncoder implements ValueEncoderInterface
 {

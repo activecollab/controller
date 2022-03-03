@@ -12,15 +12,15 @@ namespace ActiveCollab\Controller\Test;
 
 use ActiveCollab\Controller\ActionResult\MovedResult\MovedResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use InvalidArgumentException;
 
 class MovedResourceResultTest extends TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Value 'not an url' is not a valid URL.
-     */
     public function testExceptionOnInvalidUrl()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Value 'not an url' is not a valid URL.");
+
         new MovedResult('not an url');
     }
 }

@@ -1,5 +1,6 @@
 .DS_Store
 .php_cs.cache
+.phpunit.result.cache
 *.idea
 /app/settings.php
 /config/.env.development

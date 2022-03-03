@@ -12,24 +12,23 @@ namespace ActiveCollab\Controller\Test;
 
 use ActiveCollab\Controller\ActionResult\FileDownloadResult\FileDownloadResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use InvalidArgumentException;
 
 class FileDownloadResultTest extends TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage File path is required.
-     */
     public function testExceptionOnEmptyFilePath()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("File path is required.");
+
         new FileDownloadResult('', 'application/octet-stream');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Download file not found.
-     */
     public function testExceptionOnMissingFile()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage("Download file not found.");
+
         $this->assertFalse(file_exists('/unknwon file'));
         new FileDownloadResult('/unknwon file', 'application/octet-stream');
     }

@@ -18,6 +18,7 @@ use ActiveCollab\Controller\Test\Fixtures\ActionResultInContainer;
 use ActiveCollab\Controller\Test\Fixtures\ErrorThrowingController;
 use ActiveCollab\Controller\Test\Fixtures\FixedActionNameResolver;
 use ActiveCollab\Controller\Test\Fixtures\TestController;
+use InvalidArgumentException;
 use LogicException;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
@@ -40,7 +41,7 @@ class ControllerTest extends TestCase
      */
     private $action_result_container;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -70,32 +71,29 @@ class ControllerTest extends TestCase
         $this->assertEquals('GlobalNamespaceController', $test_controller->getControllerName());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Action for GET / not found.
-     */
     public function testActionNameNotResolved()
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Action for GET / not found.");
+
         $test_controller = new TestController(new FixedActionNameResolver(new RuntimeException('Throw me!')), $this->action_result_container);
         call_user_func($test_controller, $this->createRequest(), $this->createResponse());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Action for GET / not found.
-     */
     public function testActionNameIsEmpty()
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Action for GET / not found.");
+
         $test_controller = new TestController(new FixedActionNameResolver(''), $this->action_result_container);
         call_user_func($test_controller, $this->createRequest(), $this->createResponse());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Action 'not an action name' not found
-     */
     public function testActionNotFound()
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Action 'not an action name' not found");
+
         $test_controller = new TestController(new FixedActionNameResolver('not an action name'), $this->action_result_container);
         call_user_func($test_controller, $this->createRequest(), $this->createResponse());
     }
@@ -112,7 +110,7 @@ class ControllerTest extends TestCase
 
         /** @var RuntimeException $action_result */
         $action_result = $this->action_result_container->getValue();
-        $this->assertInternalType('array', $action_result);
+        $this->assertIsArray($action_result);
         $this->assertSame($before_should_return, $action_result);
     }
 
@@ -125,7 +123,7 @@ class ControllerTest extends TestCase
 
         /** @var RuntimeException $action_result */
         $action_result = $this->action_result_container->getValue();
-        $this->assertInternalType('array', $action_result);
+        $this->assertIsArray($action_result);
         $this->assertSame([1, 2, 3], $action_result);
     }
 
@@ -162,12 +160,11 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(ParseError::class, $action_result->getPrevious());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Client safe exception message can't be empty.
-     */
     public function testClientSafePhpErrorMessageCantBeEmpty()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Client safe exception message can't be empty.");
+
         (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container))
             ->setClientSafeExceptionMessage('');
     }
@@ -188,12 +185,11 @@ class ControllerTest extends TestCase
         $this->assertEquals('Sorry :( Error parsing our awesome code.', $action_result->getMessage());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Log PHP error message can't be empty.
-     */
     public function testPhpErrorLogMessageCantBeEmpty()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Log PHP error message can't be empty.");
+
         (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container))
             ->setLogPhpErrorMessage('');
     }
@@ -257,12 +253,11 @@ class ControllerTest extends TestCase
         $this->assertEquals('Sorry :( App logic is broken.', $action_result->getMessage());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Log exception message can't be empty.
-     */
     public function testExceptionLogMessageCantBeEmpty()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Log exception message can't be empty.");
+
         (new ErrorThrowingController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container))
             ->setLogExceptionMessage('');
     }

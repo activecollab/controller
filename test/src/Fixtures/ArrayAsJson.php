@@ -19,7 +19,7 @@ class ArrayAsJson implements \JsonSerializable
         $this->array = $array;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->array;
     }

@@ -28,7 +28,7 @@ class JsonSerializableTest extends TestCase
      */
     private $action_result_container;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

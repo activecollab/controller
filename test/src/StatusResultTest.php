@@ -12,15 +12,15 @@ namespace ActiveCollab\Controller\Test;
 
 use ActiveCollab\Controller\ActionResult\StatusResult\StatusResult;
 use ActiveCollab\Controller\Test\Base\TestCase;
+use LogicException;
 
 class StatusResultTest extends TestCase
 {
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Status response is not an acceptible payload.
-     */
     public function testStatusResponseIsNotAcceptablePayload()
     {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage("Status response is not an acceptable payload.");
+
         new StatusResult(200, 'Ok', new StatusResult(403));
     }
 }

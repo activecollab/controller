@@ -21,6 +21,7 @@ use Pimple\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class ActionResultEncoderTest extends TestCase
 {
@@ -31,7 +32,7 @@ class ActionResultEncoderTest extends TestCase
      */
     private $action_result_container;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -61,12 +62,11 @@ class ActionResultEncoderTest extends TestCase
         $this->assertSame('ERROR', $log_handler->getRecords()[0]['level_name']);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage No matching encoder for value of array type found.
-     */
     public function testExceptionWhenNoMatchingEncoderIsFound()
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("No matching encoder for value of array type found.");
+
         $this->action_result_container->setValue([1, 2, 3]);
         $this->assertTrue($this->action_result_container->hasValue());
 

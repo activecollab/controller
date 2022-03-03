@@ -10,35 +10,43 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\Test\Base;
 
-use Psr\Http\Message\ResponseInterface;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Environment as SlimEnvironment;
-use Slim\Http\Request as SlimRequest;
-use Slim\Http\Response as SlimResponse;
+use Psr\Http\Message\ResponseInterface;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends BaseTestCase
 {
-    protected function createRequest(string $method = 'GET', string $path = '/', array $query_params = [], array $payload = []): ServerRequestInterface
+    protected function createRequest(
+        string $method = 'GET',
+        string $path = '/',
+        array $query_params = [],
+        array $payload = []
+    ): ServerRequestInterface
     {
-        $environment_user_data = [
-            'REQUEST_METHOD' => $method,
-            'REQUEST_URI' => '/' . trim($path, '/'),
-        ];
+        return (new ServerRequestFactory())->createServerRequest(
+            $method,
+            $this->getUri($path, $query_params)
+        )->withParsedBody($payload);
+    }
+
+    private function getUri(
+        string $path,
+        array $query_params
+    ): string
+    {
+        $uri = '/' . trim($path, '/');
 
         if (!empty($query_params)) {
-            $environment_user_data['QUERY_STRING'] = http_build_query($query_params);
+            $uri .= '?' . http_build_query($query_params);
         }
 
-        $environment = SlimEnvironment::mock($environment_user_data);
-
-        $request = SlimRequest::createFromEnvironment($environment)
-            ->withParsedBody($payload);
-
-        return $request;
+        return $uri;
     }
 
     protected function createResponse(): ResponseInterface
     {
-        return new SlimResponse();
+        return (new ResponseFactory())->createResponse();
     }
 }
