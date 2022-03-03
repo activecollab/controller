@@ -59,11 +59,11 @@ class ScalarEncoderTest extends TestCase
 
         $response_body = (string) $response->getBody();
 
-        $this->assertInternalType('string', $response_body);
+        $this->assertIsString($response_body);
         $this->assertSame($expected_encoded_value, $response_body);
 
         $decoded_body = json_decode($response_body, true);
-        $this->assertInternalType(gettype($to_encode), $decoded_body);
+        $this->assertSame(gettype($to_encode), gettype($decoded_body));
     }
 
     public function provideScalars()
@@ -94,7 +94,7 @@ class ScalarEncoderTest extends TestCase
 
         $response_body = (string) $response->getBody();
 
-        $this->assertInternalType('string', $response_body);
+        $this->assertIsString($response_body);
         $this->assertSame($expected_encoded_value, $response_body);
     }
 

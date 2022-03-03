@@ -48,8 +48,8 @@ class NullEncoderTest extends TestCase
 
         $response = (new NullEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), null);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
-        $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('application/json', $response->getHeaderLine('Content-Type'));
 
         $response_body = json_decode((string) $response->getBody(), true);
 

@@ -63,11 +63,11 @@ class ViewEncoderTest extends TestCase
 
         $response = (new ViewEncoder($this->template_engine))->encode($response, new ActionResultEncoder($this->action_result_container), $view);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
-        $this->assertContains('text/html', $response->getHeaderLine('Content-Type'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('text/html', $response->getHeaderLine('Content-Type'));
 
         $response_body = (string) $response->getBody();
 
-        $this->assertContains('<h1>Welcome John Doe</h1>', $response_body);
+        $this->assertStringContainsString('<h1>Welcome John Doe</h1>', $response_body);
     }
 }

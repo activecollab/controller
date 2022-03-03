@@ -52,7 +52,7 @@ class FileDownloadEncoderTest extends TestCase
 
         $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
 
         $headers = $response->getHeaders();
 
@@ -66,11 +66,11 @@ class FileDownloadEncoderTest extends TestCase
         $this->assertSame('binary', $headers['Content-Transfer-Encoding'][0]);
 
         $this->assertArrayHasKey('Content-Disposition', $headers);
-        $this->assertContains('attachment', $headers['Content-Disposition'][0]);
-        $this->assertContains(basename(__FILE__), $headers['Content-Disposition'][0]);
+        $this->assertStringContainsString('attachment', $headers['Content-Disposition'][0]);
+        $this->assertStringContainsString(basename(__FILE__), $headers['Content-Disposition'][0]);
 
         $this->assertArrayHasKey('Content-Length', $headers);
-        $this->assertSame(filesize(__FILE__), $headers['Content-Length'][0]);
+        $this->assertSame(filesize(__FILE__), (int) $headers['Content-Length'][0]);
 
         $this->assertArrayHasKey('Expires', $headers);
         $this->assertSame('0', $headers['Expires'][0]);
@@ -93,7 +93,7 @@ class FileDownloadEncoderTest extends TestCase
 
         $response = (new FileDownloadEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), $file_download);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
 
         $headers = $response->getHeaders();
 
@@ -107,11 +107,11 @@ class FileDownloadEncoderTest extends TestCase
         $this->assertSame('binary', $headers['Content-Transfer-Encoding'][0]);
 
         $this->assertArrayHasKey('Content-Disposition', $headers);
-        $this->assertContains('inline', $headers['Content-Disposition'][0]);
-        $this->assertContains(basename(__FILE__), $headers['Content-Disposition'][0]);
+        $this->assertStringContainsString('inline', $headers['Content-Disposition'][0]);
+        $this->assertStringContainsString(basename(__FILE__), $headers['Content-Disposition'][0]);
 
         $this->assertArrayHasKey('Content-Length', $headers);
-        $this->assertSame(filesize(__FILE__), $headers['Content-Length'][0]);
+        $this->assertSame(filesize(__FILE__), (int) $headers['Content-Length'][0]);
 
         $this->assertArrayHasKey('Expires', $headers);
         $this->assertSame('0', $headers['Expires'][0]);

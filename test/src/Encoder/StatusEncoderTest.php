@@ -49,7 +49,7 @@ class StatusEncoderTest extends TestCase
 
         $response = (new StatusEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), new StatusResult(200, 'All good.'));
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('All good.', $response->getReasonPhrase());
@@ -66,15 +66,15 @@ class StatusEncoderTest extends TestCase
 
         $response = (new StatusEncoder())->encode($response, $encoder, new StatusResult(200, 'All good.', $data_to_encode));
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
-        $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('application/json', $response->getHeaderLine('Content-Type'));
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('All good.', $response->getReasonPhrase());
 
         $response_body = json_decode((string) $response->getBody(), true);
 
-        $this->assertInternalType('array', $response_body);
+        $this->assertIsArray($response_body);
         $this->assertSame($data_to_encode, $response_body);
     }
 }

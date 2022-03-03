@@ -36,12 +36,19 @@ class RequestParamGetterTest extends TestCase
 
     public function testGetQueryParam()
     {
-        $request = $this->createRequest('GET', '/', [
-            'search' => 'for this',
-            'extended' => true,
-        ]);
+        $request = $this->createRequest(
+            'GET',
+            '/',
+            [
+                'search' => 'for this',
+                'extended' => true,
+            ]
+        );
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
+        $controller = new TestController(
+            new FixedActionNameResolver('throwPhpError'),
+            $this->action_result_container
+        );
 
         $this->assertSame('for this', $controller->getQueryParam($request, 'search'));
         $this->assertSame('1', $controller->getQueryParam($request, 'extended'));
@@ -49,12 +56,19 @@ class RequestParamGetterTest extends TestCase
 
     public function testQueryParamReturnsDefaultWhenParamNotFound()
     {
-        $request = $this->createRequest('GET', '/', [
-            'search' => 'for this',
-            'extended' => true,
-        ]);
+        $request = $this->createRequest(
+            'GET',
+            '/',
+            [
+                'search' => 'for this',
+                'extended' => true,
+            ]
+        );
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
+        $controller = new TestController(
+            new FixedActionNameResolver('throwPhpError'),
+            $this->action_result_container
+        );
 
         $this->assertNull($controller->getQueryParam($request, 'unknown'));
         $this->assertSame(123, $controller->getQueryParam($request, 'unknown', 123));
@@ -62,10 +76,15 @@ class RequestParamGetterTest extends TestCase
 
     public function testGetParsedBodyParamFromArray()
     {
-        $request = $this->createRequest('GET', '/', [], [
-            'search' => 'for this',
-            'extended' => true,
-        ]);
+        $request = $this->createRequest(
+            'GET',
+            '/',
+            [],
+            [
+                'search' => 'for this',
+                'extended' => true,
+            ]
+        );
 
         $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
 

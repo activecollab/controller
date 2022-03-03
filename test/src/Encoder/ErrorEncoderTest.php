@@ -58,16 +58,16 @@ class ErrorEncoderTest extends TestCase
 
         $response = $encoder->encode($response, new ActionResultEncoder($this->action_result_container), $exception);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
-        $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('application/json', $response->getHeaderLine('Content-Type'));
 
         $response_body = json_decode((string) $response->getBody(), true);
 
-        $this->assertInternalType('array', $response_body);
+        $this->assertIsArray($response_body);
         $this->assertSame('Failing due to error in the app logic.', $response_body['message']);
         $this->assertSame(RuntimeException::class, $response_body['type']);
 
-        $this->assertInternalType('array', $response_body['previous']);
+        $this->assertIsArray($response_body['previous']);
         $this->assertSame('Error in the app logic.', $response_body['previous']['message']);
         $this->assertSame(LogicException::class, $response_body['previous']['type']);
     }
@@ -85,17 +85,17 @@ class ErrorEncoderTest extends TestCase
 
         $response = $encoder->encode($response, new ActionResultEncoder($this->action_result_container), $exception);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
-        $this->assertContains('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('application/json', $response->getHeaderLine('Content-Type'));
 
         $response_body = json_decode((string) $response->getBody(), true);
 
-        $this->assertInternalType('array', $response_body);
+        $this->assertIsArray($response_body);
         $this->assertSame(__FILE__, $response_body['file']);
         $this->assertNotEmpty($response_body['line']);
         $this->assertNotEmpty($response_body['trace']);
 
-        $this->assertInternalType('array', $response_body['previous']);
+        $this->assertIsArray($response_body['previous']);
         $this->assertSame(__FILE__, $response_body['previous']['file']);
         $this->assertNotEmpty($response_body['previous']['line']);
         $this->assertNotEmpty($response_body['previous']['trace']);

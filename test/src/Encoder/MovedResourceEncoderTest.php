@@ -54,7 +54,7 @@ class MovedResourceEncoderTest extends TestCase
 
         $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), new MovedResult('https://activecollab.com'));
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
 
         $this->assertSame('https://activecollab.com', $response->getHeaderLine('Location'));
         $this->assertSame(302, $response->getStatusCode());
@@ -67,7 +67,7 @@ class MovedResourceEncoderTest extends TestCase
 
         $response = (new MovedResourceEncoder())->encode($response, new ActionResultEncoder($this->action_result_container), new MovedResult('https://activecollab.com', true));
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertContains('yes', $response->getHeaderLine('X-Test'));
+        $this->assertStringContainsString('yes', $response->getHeaderLine('X-Test'));
 
         $this->assertSame('https://activecollab.com', $response->getHeaderLine('Location'));
         $this->assertSame(301, $response->getStatusCode());
