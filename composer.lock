@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "225126b909a15141b454f68f21b2ab0b",
+    "content-hash": "a22ff6e6b8d1c1eeb91451c0cccda701",
     "packages": [
         {
             "name": "activecollab/containeraccess",
@@ -4754,7 +4754,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.3",
+        "php": ">=8.0",
         "ext-json": "*"
     },
     "platform-dev": [],
