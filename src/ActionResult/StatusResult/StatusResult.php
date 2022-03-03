@@ -27,7 +27,7 @@ class StatusResult implements StatusResultInterface
     )
     {
         if ($payload instanceof StatusResultInterface) {
-            throw new LogicException('Status response is not an acceptible payload.');
+            throw new LogicException('Status response is not an acceptable payload.');
         }
 
         $this->status_code = $status_code;

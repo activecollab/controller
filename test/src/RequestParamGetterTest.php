@@ -51,7 +51,7 @@ class RequestParamGetterTest extends TestCase
         );
 
         $this->assertSame('for this', $controller->getQueryParam($request, 'search'));
-        $this->assertSame('1', $controller->getQueryParam($request, 'extended'));
+        $this->assertSame(true, $controller->getQueryParam($request, 'extended'));
     }
 
     public function testQueryParamReturnsDefaultWhenParamNotFound()
@@ -143,7 +143,10 @@ class RequestParamGetterTest extends TestCase
     {
         $request = $this->createRequest();
 
-        $controller = new TestController(new FixedActionNameResolver('throwPhpError'), $this->action_result_container);
+        $controller = new TestController(
+            new FixedActionNameResolver('throwPhpError'),
+            $this->action_result_container
+        );
 
         $this->assertSame('GET', $controller->getServerParam($request, 'REQUEST_METHOD'));
         $this->assertSame('/', $controller->getServerParam($request, 'REQUEST_URI'));

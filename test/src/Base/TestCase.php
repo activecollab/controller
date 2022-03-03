@@ -25,24 +25,21 @@ abstract class TestCase extends BaseTestCase
         array $payload = []
     ): ServerRequestInterface
     {
+        $uri = $this->getUri($path);
+
         return (new ServerRequestFactory())->createServerRequest(
             $method,
-            $this->getUri($path, $query_params)
-        )->withParsedBody($payload);
+            $uri,
+            [
+                'REQUEST_METHOD' => $method,
+                'REQUEST_URI' => $uri,
+            ]
+        )->withParsedBody($payload)->withQueryParams($query_params);
     }
 
-    private function getUri(
-        string $path,
-        array $query_params
-    ): string
+    private function getUri(string $path): string
     {
-        $uri = '/' . trim($path, '/');
-
-        if (!empty($query_params)) {
-            $uri .= '?' . http_build_query($query_params);
-        }
-
-        return $uri;
+        return '/' . trim($path, '/');
     }
 
     protected function createResponse(): ResponseInterface
