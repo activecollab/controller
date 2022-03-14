@@ -72,7 +72,8 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     public function __invoke(
         ServerRequestInterface $request,
-        ResponseInterface $response, callable $next = null
+        ResponseInterface $response,
+        callable $next = null
     ): ResponseInterface
     {
         try {
@@ -86,7 +87,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         }
 
         if (!method_exists($this, $action_name)) {
-            throw new ActionNotFound(get_class($this), $action_name);
+            throw new ActionNotFound($this::class, $action_name);
         }
 
         // Run __before() method prior to running the action.
@@ -112,12 +113,12 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $response;
     }
 
-    private $controller_name;
+    private ?string $controller_name = null;
 
     public function getControllerName(): string
     {
         if (empty($this->controller_name)) {
-            $controller_class = get_class($this);
+            $controller_class = $this::class;
 
             if (($pos = strrpos($controller_class, '\\')) !== false) {
                 $this->controller_name = substr($controller_class, $pos + 1);
@@ -155,7 +156,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
         return $this;
     }
 
-    public function getLogger(): ? LoggerInterface
+    public function getLogger(): ?LoggerInterface
     {
         return $this->logger;
     }
@@ -217,11 +218,12 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     private function handleException(Exception $exception): Exception
     {
-        if ($this->getLogger()) {
-            $this->getLogger()->error($this->getLogExceptionMessage(), [
+        $this->getLogger()?->error(
+            $this->getLogExceptionMessage(),
+            [
                 'exception' => $exception,
-            ]);
-        }
+            ]
+        );
 
         $exception_message = $this->prepareClientSafeErrorMessage($exception);
 
@@ -230,11 +232,12 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
 
     private function handlePhpError(Throwable $php_error): Exception
     {
-        if ($this->getLogger()) {
-            $this->getLogger()->error($this->getLogPhpErrorMessage(), [
+        $this->getLogger()?->error(
+            $this->getLogPhpErrorMessage(),
+            [
                 'exception' => $php_error,
-            ]);
-        }
+            ]
+        );
 
         $exception_message = $this->prepareClientSafeErrorMessage($php_error);
 
@@ -245,7 +248,7 @@ abstract class Controller implements ContainerAccessInterface, ControllerInterfa
     {
         $exception_message = $this->getClientSafeExceptionMessage();
 
-        if (strpos($exception_message, '{message}') !== false) {
+        if (str_contains($exception_message, '{message}')) {
             $exception_message = str_replace('{message}', $error->getMessage(), $exception_message);
         }
 
