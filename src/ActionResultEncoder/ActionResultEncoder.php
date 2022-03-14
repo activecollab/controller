@@ -14,12 +14,15 @@ use ActiveCollab\ContainerAccess\ContainerAccessInterface;
 use ActiveCollab\ContainerAccess\ContainerAccessInterface\Implementation as ContainerAccessImplementation;
 use ActiveCollab\Controller\ActionResult\Container\ActionResultContainerInterface;
 use ActiveCollab\Controller\ActionResultEncoder\ValueEncoder\ValueEncoderInterface;
+use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
-class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAccessInterface
+class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAccessInterface, MiddlewareInterface
 {
     use ContainerAccessImplementation;
 
@@ -97,6 +100,21 @@ class ActionResultEncoder implements ActionResultEncoderInterface, ContainerAcce
         $this->value_encoders = array_merge($this->value_encoders, $value_encoders);
 
         return $this;
+    }
+
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler
+    ): ResponseInterface
+    {
+        if (!$this->getEncodeOnExit()) {
+            throw new LogicException('Action result can be encoded after handling only.');
+        }
+
+        return $this->tryToEncodeValue(
+            $handler->handle($request),
+            $this->action_result_container
+        );
     }
 
     public function __invoke(
