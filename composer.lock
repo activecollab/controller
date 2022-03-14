@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a22ff6e6b8d1c1eeb91451c0cccda701",
+    "content-hash": "73d07b8a1ee3dedee22023a56e15c5ac",
     "packages": [
         {
             "name": "activecollab/containeraccess",
@@ -151,31 +151,37 @@
         },
         {
             "name": "activecollab/utils",
-            "version": "1.2.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/activecollab/utils.git",
-                "reference": "a5d489e8c4967451df8671d5b47dd934f7bcb8b5"
+                "reference": "73cb88d5a39c0774f68a08c03b40e25b028c5046"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/activecollab/utils/zipball/a5d489e8c4967451df8671d5b47dd934f7bcb8b5",
-                "reference": "a5d489e8c4967451df8671d5b47dd934f7bcb8b5",
+                "url": "https://api.github.com/repos/activecollab/utils/zipball/73cb88d5a39c0774f68a08c03b40e25b028c5046",
+                "reference": "73cb88d5a39c0774f68a08c03b40e25b028c5046",
                 "shasum": ""
             },
             "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
                 "ext-mbstring": "*",
                 "ext-openssl": "*",
-                "php": ">=5.6.0"
+                "php": ">=7.4"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^1.0",
-                "phpunit/phpunit": "^5.0",
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "laminas/laminas-diactoros": "^2.0",
+                "phpunit/phpunit": "^9.0",
+                "psr/http-client": "^1.0",
+                "psr/http-factory": "^1.0",
                 "psr/http-message": "~1.0",
-                "vlucas/phpdotenv": "^2.2.0",
-                "zendframework/zend-diactoros": "^1.3"
+                "vlucas/phpdotenv": "^2.2.0"
             },
             "suggest": {
+                "psr/http-client": "When you need to use HttpClient",
+                "psr/http-factory": "When you need to use HttpClient",
                 "psr/http-message": "When you need to use RequestValuContainer",
                 "vlucas/phpdotenv": "When you want to use DotEnv config loader"
             },
@@ -184,6 +190,7 @@
                 "psr-4": {
                     "ActiveCollab\\Firewall\\": "src/Firewall",
                     "ActiveCollab\\Encryptor\\": "src/Encryptor",
+                    "ActiveCollab\\HttpClient\\": "src/HttpClient",
                     "ActiveCollab\\ConfigLoader\\": "src/ConfigLoader",
                     "ActiveCollab\\ValueContainer\\": "src/ValueContainer",
                     "ActiveCollab\\CurrentTimestamp\\": "src/CurrentTimestamp"
@@ -201,7 +208,7 @@
                 "issues": "https://github.com/activecollab/utils/issues",
                 "source": "https://github.com/activecollab/utils/tree/master"
             },
-            "time": "2017-02-01T06:23:19+00:00"
+            "time": "2020-07-29T12:42:43+00:00"
         },
         {
             "name": "laminas/laminas-diactoros",
