@@ -51,6 +51,10 @@ This is done in such a way that new `RuntimeException` is constructed, with gene
 
 To change default exception message, call `setLogExceptionMessage()` controller method:
 
+## To do
+
+1. Add `$payload` to status shortcut methods.
+
 ```php
 $controller->setLogExceptionMessage('Something weird happened: {exception}');
 ```
