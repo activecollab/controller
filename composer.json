@@ -1,6 +1,6 @@
 {
     "name": "activecollab/controller",
-    "description": "Invokeable controller that accepts containers, works with ETag and more",
+    "description": "Invokable controller that accepts containers, works with ETag and more",
     "keywords": [
         "controller"
     ],
