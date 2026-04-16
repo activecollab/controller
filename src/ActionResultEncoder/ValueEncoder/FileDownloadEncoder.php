@@ -47,7 +47,7 @@ class FileDownloadEncoder extends ValueEncoder
             ->withHeader('Content-Type', $content_type)
             ->withHeader('Content-Description', $description)
             ->withHeader('Content-Transfer-Encoding', 'binary')
-            ->withHeader('Content-Disposition', $disposition . '; filename=' . trim($value->getFileName()))
+            ->withHeader('Content-Disposition', $disposition . '; filename="' . trim($value->getFileName()) . '"')
             ->withHeader('Content-Length', filesize($value->getFilePath()))
             ->withHeader('Expires', '0')
             ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')

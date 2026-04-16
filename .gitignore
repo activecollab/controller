@@ -14,3 +14,4 @@
 /public/libraries.css
 /public/stylesheet.css
 /public/fonts/glyph*
+.phpunit.result.cache
