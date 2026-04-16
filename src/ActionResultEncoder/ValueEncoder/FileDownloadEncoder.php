@@ -12,8 +12,8 @@ namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
 use ActiveCollab\Controller\ActionResult\FileDownloadResult\FileDownloadResultInterface;
 use ActiveCollab\Controller\ActionResultEncoder\ActionResultEncoderInterface;
+use Laminas\Diactoros\StreamFactory;
 use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Stream;
 
 class FileDownloadEncoder extends ValueEncoder
 {
@@ -40,7 +40,7 @@ class FileDownloadEncoder extends ValueEncoder
             $description = 'File Transfer';
         }
 
-        $stream = new Stream(fopen($value->getFilePath(), 'rb'));
+        $stream = (new StreamFactory())->createStreamFromFile($value->getFilePath(), 'rb');
 
         /** @var ResponseInterface $response */
         $response = $response

@@ -7,14 +7,15 @@
     "license": "MIT",
     "type": "library",
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.4",
         "ext-json": "*",
         "activecollab/containeraccess": "^1.0",
         "activecollab/etag": "^1.0",
         "activecollab/templateengine": "^2.0",
         "activecollab/utils": "^1.0",
-        "psr/http-factory": "^1.0",
+        "psr/http-factory": "^1.1",
         "psr/http-message": "^1.0",
+        "laminas/laminas-diactoros": "^2.17.0",
         "psr/log": "~1.0"
     },
     "require-dev": {
@@ -22,8 +23,7 @@
         "monolog/monolog": "^1.0",
         "pimple/pimple": "^3.0",
         "phpunit/phpunit": "^5.0",
-        "slim/http": "0.1.0",
-        "zendframework/zend-diactoros": "^2.2"
+        "slim/http": "0.1.0"
     },
     "suggest": {
         "slim/http": "Allow using of chunked file download"
@@ -41,7 +41,7 @@
     "config": {
         "preferred-install": "dist",
         "platform": {
-            "php": "7.3.0"
+            "php": "7.4.0"
         },
         "allow-plugins": {
             "php-http/discovery": true

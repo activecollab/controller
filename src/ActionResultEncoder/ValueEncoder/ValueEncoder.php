@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace ActiveCollab\Controller\ActionResultEncoder\ValueEncoder;
 
+use Laminas\Diactoros\StreamFactory;
 use Psr\Http\Message\StreamInterface;
-use Zend\Diactoros\Stream;
 
 abstract class ValueEncoder implements ValueEncoderInterface
 {
@@ -27,12 +27,6 @@ abstract class ValueEncoder implements ValueEncoderInterface
      */
     protected function createBodyFromText(string $text): StreamInterface
     {
-        $handle = fopen('php://temp', 'wb+');
-
-        $body = new Stream($handle);
-        $body->write($text);
-        $body->rewind();
-
-        return $body;
+        return (new StreamFactory())->createStream($text);
     }
 }
