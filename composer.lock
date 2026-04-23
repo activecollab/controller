@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c44bbd2ce8d85ddefb6ef0603365539b",
+    "content-hash": "204b910e4d93643ea8aaaeba2861fbb7",
     "packages": [
         {
             "name": "activecollab/containeraccess",
@@ -151,35 +151,39 @@
         },
         {
             "name": "activecollab/utils",
-            "version": "2.0.0",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/activecollab/utils.git",
-                "reference": "73cb88d5a39c0774f68a08c03b40e25b028c5046"
+                "reference": "8d0eec6b9e5b05b59c00f74e80acf583c22cb1e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/activecollab/utils/zipball/73cb88d5a39c0774f68a08c03b40e25b028c5046",
-                "reference": "73cb88d5a39c0774f68a08c03b40e25b028c5046",
+                "url": "https://api.github.com/repos/activecollab/utils/zipball/8d0eec6b9e5b05b59c00f74e80acf583c22cb1e3",
+                "reference": "8d0eec6b9e5b05b59c00f74e80acf583c22cb1e3",
                 "shasum": ""
             },
             "require": {
+                "dflydev/fig-cookies": "^3.0",
                 "ext-curl": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "ext-openssl": "*",
-                "php": ">=7.4"
+                "php": ">=8.2",
+                "psr/http-server-middleware": "^1.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^2.0",
+                "giggsey/libphonenumber-for-php": "^8.13",
                 "laminas/laminas-diactoros": "^2.0",
                 "phpunit/phpunit": "^9.0",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.0",
                 "psr/http-message": "~1.0",
-                "vlucas/phpdotenv": "^2.2.0"
+                "vlucas/phpdotenv": "^5.0.0"
             },
             "suggest": {
+                "giggsey/libphonenumber-for-php": "When you need to use PhoneNumber",
                 "psr/http-client": "When you need to use HttpClient",
                 "psr/http-factory": "When you need to use HttpClient",
                 "psr/http-message": "When you need to use RequestValuContainer",
@@ -188,9 +192,14 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
+                    "ActiveCollab\\Url\\": "src/Url",
+                    "ActiveCollab\\Json\\": "src/Json",
+                    "ActiveCollab\\Cookies\\": "src/Cookies",
                     "ActiveCollab\\Firewall\\": "src/Firewall",
                     "ActiveCollab\\Encryptor\\": "src/Encryptor",
                     "ActiveCollab\\HttpClient\\": "src/HttpClient",
+                    "ActiveCollab\\ClassFinder\\": "src/ClassFinder",
+                    "ActiveCollab\\PhoneNumber\\": "src/PhoneNumber",
                     "ActiveCollab\\ConfigLoader\\": "src/ConfigLoader",
                     "ActiveCollab\\ValueContainer\\": "src/ValueContainer",
                     "ActiveCollab\\CurrentTimestamp\\": "src/CurrentTimestamp"
@@ -206,9 +215,71 @@
             ],
             "support": {
                 "issues": "https://github.com/activecollab/utils/issues",
-                "source": "https://github.com/activecollab/utils/tree/master"
+                "source": "https://github.com/activecollab/utils/tree/3.2.0"
             },
-            "time": "2020-07-29T12:42:43+00:00"
+            "time": "2026-04-05T07:17:02+00:00"
+        },
+        {
+            "name": "dflydev/fig-cookies",
+            "version": "v3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dflydev/dflydev-fig-cookies.git",
+                "reference": "f9c63878e75483800477db4f897237b36556617b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dflydev/dflydev-fig-cookies/zipball/f9c63878e75483800477db4f897237b36556617b",
+                "reference": "f9c63878e75483800477db4f897237b36556617b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "php": "^7.2 || ^8.0",
+                "psr/http-message": "^1.0.1 || ^2"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^8",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^0.12",
+                "phpstan/phpstan-phpunit": "^0.12.16",
+                "phpunit/phpunit": "^7.2.6 || ^9",
+                "scrutinizer/ocular": "^1.8",
+                "squizlabs/php_codesniffer": "^3.3",
+                "vimeo/psalm": "^4.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dflydev\\FigCookies\\": "src/Dflydev/FigCookies"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Beau Simensen",
+                    "email": "beau@dflydev.com"
+                }
+            ],
+            "description": "Cookies for PSR-7 HTTP Message Interface.",
+            "keywords": [
+                "cookies",
+                "psr-7",
+                "psr7"
+            ],
+            "support": {
+                "issues": "https://github.com/dflydev/dflydev-fig-cookies/issues",
+                "source": "https://github.com/dflydev/dflydev-fig-cookies/tree/v3.2.0"
+            },
+            "time": "2025-09-03T20:01:04+00:00"
         },
         {
             "name": "laminas/laminas-diactoros",
@@ -4638,13 +4709,13 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.0",
         "ext-json": "*"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }
